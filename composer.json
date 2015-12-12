@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Zalora\Punyan\\": "src/"
+      "Zalora\\Punyan\\": "src/"
     }
   }
 }
