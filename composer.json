@@ -1,0 +1,22 @@
+{
+  "name": "Zalora/punyan",
+  "type": "library",
+  "description": "PHP implementation of Bunyan",
+  "keywords": ["bunyan", "logger", "json"],
+  "version": "0.0.1-dev",
+  "homepage": "https://github.com/zalora/punyan",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [{
+    "name": "Wolfram Huesken",
+    "email": "wolfram.huesken@zalora.com"
+  }],
+  "require": {
+    "php": ">= 5.3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Zalora\Punyan\\": "src/"
+    }
+  }
+}
