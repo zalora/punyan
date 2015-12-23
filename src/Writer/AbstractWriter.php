@@ -42,6 +42,9 @@ abstract class AbstractWriter implements IWriter {
         $this->_write($level, $msg, $context);
     }
 
+    /**
+     * @return string
+     */
     protected function getCalledClass() {
         $class = get_called_class();
         if (strpos($class, '\\') > 0) {
@@ -51,12 +54,15 @@ abstract class AbstractWriter implements IWriter {
         return $class;
     }
 
+    /**
+     * @return int
+     */
     protected function getLogLevel() {
         $logLevelConstant = sprintf('LEVEL_%s',
             strtoupper($this->config['writers'][$this->getCalledClass()]['logLevel'])
         );
 
-        return static::$logLevelConstant;
+        return constant(sprintf('static::%s', $logLevelConstant));
     }
 
 
