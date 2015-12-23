@@ -1,11 +1,18 @@
 <?php
 /**
- * @author Wolfram Huesken <woh@m18.io>
- * @link https://github.com/Lunatic666/Punyan
+ * PHP implementation of Bunyan Logger
+ * @author Wolfram Huesken <wolfram.huesken@zalora.com>
+ * @link https://github.com/zalora/punyan
  */
 
 namespace Zalora\Punyan;
 
+use SplObjectStorage;
+use Zalora\Punyan\Writer\IWriter;
+
+/**
+ * @package Zalora\Punyan
+ */
 class Logger implements ILogger {
 
     /**
@@ -19,6 +26,11 @@ class Logger implements ILogger {
     protected $options;
 
     /**
+     * @var SplObjectStorage
+     */
+    protected $writers;
+
+    /**
      * Initialize with the app name and an options array
      * @param string $appName
      * @param array $options
@@ -26,6 +38,8 @@ class Logger implements ILogger {
     public function __construct($appName, array $options) {
         $this->appName = $appName;
         $this->options = $options;
+
+        $this->writers = new SplObjectStorage();
     }
 
     /**
@@ -77,11 +91,33 @@ class Logger implements ILogger {
     }
 
     /**
+     * @param int $level
+     * @param string $msg
+     * @param array $context
+     * @return void
+     */
+    public function log($level, $msg, array $context = array()) {
+        $this->update($level, $msg, $context);
+    }
+
+    /**
+     * Add writer instances
+     * @param IWriter $writer
+     */
+    public function addWriter(IWriter $writer) {
+        $this->writers->attach($writer->init());
+    }
+
+    public function removeWriter(IWriter $writer) {
+        $this->writers->detach($writer);
+    }
+
+    /**
      * @param string $level
      * @param string|\Exception $msg
      * @param array $context
      */
-    protected function write($level, $msg, array $context = array()) {
+    protected function update($level, $msg, array $context = array()) {
         if ($msg instanceof \Exception) {
             echo $msg->getMessage() . PHP_EOL;
         } else {

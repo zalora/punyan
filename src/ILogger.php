@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Wolfram Huesken <woh@m18.io>
+ * @author Wolfram Huesken <wolfram.huesken@zalora.com>
  */
 
 namespace Zalora\Punyan;
@@ -49,39 +49,10 @@ interface ILogger {
     const LEVEL_TRACE = 10;
 
     /**
-     * @param string|\Exception $msg
+     * @param int $level
+     * @param string $msg
      * @param array $context
+     * @return void
      */
-    public function fatal($msg, array $context = array());
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function error($msg, array $context = array());
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function warn($msg, array $context = array());
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function info($msg, array $context = array());
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function debug($msg, array $context = array());
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function trace($msg, array $context = array());
-
+    public function log($level, $msg, array $context = array());
 }

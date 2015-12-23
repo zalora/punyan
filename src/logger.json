@@ -1,0 +1,9 @@
+{
+  "globalLogLevel": "info",
+  "writer": {
+    "FileWriter": {
+      "file": "test.log",
+      "logLevel": "warn"
+    }
+  }
+}
