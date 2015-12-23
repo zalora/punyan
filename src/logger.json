@@ -1,6 +1,6 @@
 {
   "globalLogLevel": "info",
-  "writer": {
+  "writers": {
     "FileWriter": {
       "file": "test.log",
       "logLevel": "warn"

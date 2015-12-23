@@ -53,7 +53,7 @@ abstract class AbstractWriter implements IWriter {
 
     protected function getLogLevel() {
         $logLevelConstant = sprintf('LEVEL_%s',
-            strtoupper($this->config[$this->getCalledClass()]['logLevel'])
+            strtoupper($this->config['writers'][$this->getCalledClass()]['logLevel'])
         );
 
         return static::$logLevelConstant;
