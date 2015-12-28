@@ -20,4 +20,12 @@ interface IWriter extends ILogger
      */
     public function init();
 
+    /**
+     * @param int $level
+     * @param string $msg
+     * @param array $context
+     * @return void
+     */
+    public function log($level, $msg, array $context = array());
+
 }

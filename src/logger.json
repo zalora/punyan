@@ -1,9 +1,25 @@
 {
-  "globalLogLevel": "info",
-  "writers": {
-    "FileWriter": {
-      "file": "test.log",
-      "logLevel": "warn"
+  "mute": false,
+  "filters": [
+    { "priority": {"priority": "trace", "operator": ">="} }
+  ],
+  "writers": [
+    {
+      "Stream": {
+        "mute": false,
+        "url": "file:///Users/whuesken/test.log",
+        "filters": [
+          { "priority": {"priority": "warn", "operator": ">="} },
+          { "regexp": "/beer/" },
+          { "namespace": "Zalora\\Bootstrap" },
+          {
+            "callback": {
+              "function": "Bob_Bootstrap::camelCaseFilter",
+              "options": "Zalora_Test"
+            }
+          }
+        ]
+      }
     }
-  }
+  ]
 }

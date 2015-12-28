@@ -6,19 +6,20 @@
 
 namespace Zalora\Punyan\Writer;
 
-class FileWriter extends AbstractWriter {
+class Stream extends AbstractWriter {
 
     /**
-     * @var \SplFileObject
+     * @var mixed
      */
-    protected $file;
+    protected $stream;
 
     /**
      * Check if file exists and is writable
      * @return AbstractWriter
      */
     public function init() {
-        $filePath = $this->config[__CLASS__]['file'];
+        $url = $this->config['url'];
+
         return $this;
     }
 
