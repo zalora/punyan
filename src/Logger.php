@@ -49,7 +49,6 @@ class Logger implements ILogger
         $this->writers = new SplObjectStorage();
         $this->filters = AbstractFilter::buildFilters($this->options['filters']);
         $this->writers = $this->buildWriters($this->options['writers']);
-
     }
 
     /**
