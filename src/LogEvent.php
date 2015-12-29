@@ -10,51 +10,93 @@ namespace Zalora\Punyan;
 /**
  * @package Zalora\Punyan
  *
- * @method int getPriority() getPriority()
- * @method void setPriority() setPriority(int $priority)
+ * @method int getLevel() getLevel()
+ * @method void setLevel() setLevel(int $level)
  *
- * @method string getPriorityName() getPriorityName()
- * @method void setPriorityName() setPriorityName(string $priorityName)
-
- * @method string getMessage() getMessage()
- * @method void setMessage() setMessage(string $message)
+ * @method string getMsg() getMsg()
+ * @method void setMsg() setMsg(string $msg)
  *
- * @method float getTimestamp() getTimestamp()
- * @method void setTimestamp() setTimestamp(float $timestamp)
+ * @method string getTime() getTime()
+ * @method void setTime() setTime(string $time)
+ *
+ * @method array getException() getException()
+ * @method void setException() setException(array $exception)
+ *
+ * @method string getName() getName()
+ * @method void setName() setName(string $name)
+ *
+ * @method string getHostname() getHostname()
+ * @method void setHostname() setHostname(string $hostname)
+ *
+ * @method int getPid() getPid()
+ * @method void setPid() setPid(int $pid)
+ *
+ * @method int getV() getV()
+ * @method void setV() setV(int $v)
  */
-class LogEvent extends \ArrayObject {
-
+class LogEvent extends \ArrayObject implements ILogger
+{
     /**
-     * Set basic values
+     * Create a new log event (Saves a line or two)
+     * @param int $level
+     * @param string|\Exception $msg
+     * @param array $context
+     * @param string $appName
+     * @return LogEvent
      */
-    public function __construct(array $context = array())
+    public static function create($level, $msg, array $context, $appName)
     {
-        parent::__construct($context);
-        if (empty($this->getTimestamp())) {
-            $this->setTimestamp(microtime(true));
+        $logEvent = new LogEvent($context);
+        $logEvent->setLevel($level);
+
+        if ($msg instanceof \Exception) {
+            $logEvent->setMsg($msg->getMessage());
+            $logEvent->setException(
+                static::exceptionToArray($msg)
+            );
+        } else {
+            $logEvent->setMsg($msg);
         }
+
+        $logEvent->setName($appName);
+
+        // Set formatted UTC timestamp (Seriously PHP?)
+        $timeParts = explode('.', microtime(true));
+        $dt = new \DateTime();
+        $dt->setTimezone(new \DateTimeZone('UTC'));
+        $dt->setTimestamp($timeParts[0]);
+        $utcTime = $dt->format('Y-m-d\TH:i:s.') . $timeParts[1] . 'Z';
+
+        $logEvent->setTime($utcTime);
+
+        return $logEvent;
     }
 
     /**
-     * Create a new log event (Saves a line or two)
-     * @param string $msg
-     * @param int $priority
-     * @param array $context
-     * @return LogEvent
+     * @param \Exception $ex
+     * @return array
      */
-    public static function create($msg, $priority, array $context) {
-        $logEvent = new LogEvent($context);
-        $logEvent->setMessage($msg);
-        $logEvent->setPriority($priority);
+    protected static function exceptionToArray(\Exception $ex)
+    {
+        $e = array();
+        $e['file'] = $ex->getFile();
+        $e['message'] = $ex->getMessage();
+        $e['code'] = $ex->getCode();
+        $e['line'] = $ex->getLine();
+        $e['trace'] = $ex->getTrace();
 
-        return $logEvent;
+        if ($ex = $ex->getPrevious()) {
+            $e['previous'] = static::exceptionToArray($ex);
+        }
+
+        return $e;
     }
 
     /**
      * Default getters and setters
      * @param string $name
      * @param mixed $arguments
-     * @return void
+     * @return mixed|void
      */
     public function __call($name, $arguments)
     {
@@ -72,7 +114,7 @@ class LogEvent extends \ArrayObject {
         if ($prefix === 'get') {
             if (!empty($this[$varName])) {
                 return $this[$varName];
-            } else { return; }
+            } else { return null; }
         }
 
         if ($prefix === 'set') {
@@ -81,5 +123,7 @@ class LogEvent extends \ArrayObject {
             }
             $this[$varName] = $arguments[0];
         }
+
+        return null;
     }
 }

@@ -7,6 +7,7 @@
 namespace Zalora\Punyan\Writer;
 
 use Zalora\Punyan\ILogger;
+use Zalora\Punyan\LogEvent;
 
 /**
  * @package Zalora\Punyan\Writer
@@ -16,16 +17,14 @@ interface IWriter extends ILogger
 
     /**
      * Prepare for action
-     * @return IWriter
+     * @return void
      */
     public function init();
 
     /**
-     * @param int $level
-     * @param string $msg
-     * @param array $context
+     * @param LogEvent $logEvent
      * @return void
      */
-    public function log($level, $msg, array $context = array());
+    public function log(LogEvent $logEvent);
 
 }

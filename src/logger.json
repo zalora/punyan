@@ -1,7 +1,7 @@
 {
   "mute": false,
   "filters": [
-    { "priority": {"priority": "trace", "operator": ">="} }
+    { "priority": {"priority": "info", "operator": ">="} }
   ],
   "writers": [
     {

@@ -9,8 +9,8 @@ namespace Zalora\Punyan;
  * Define log level methods
  * @package Zalora
  */
-interface ILogger {
-
+interface ILogger
+{
     /**
      * The service/app is going to stop or become unusable now - An operator should definitely look into this soon
      * @var int
@@ -47,12 +47,4 @@ interface ILogger {
      * @var int
      */
     const LEVEL_TRACE = 10;
-
-    /**
-     * @param int $priority
-     * @param string $msg
-     * @param array $context
-     * @return void
-     */
-    public function log($priority, $msg, array $context = array());
 }

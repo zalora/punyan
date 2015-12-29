@@ -32,7 +32,8 @@ class Priority extends AbstractFilter
     /**
      * @return void
      */
-    protected function init() {
+    protected function init()
+    {
         $this->priority = $this->getPriority();
         if (empty($this->config['operator'])) {
             $this->operator = static::DEFAULT_OPERATOR;
@@ -45,15 +46,17 @@ class Priority extends AbstractFilter
      * @param LogEvent $event
      * @return bool
      */
-    public function accept(LogEvent $event) {
-        return version_compare($event['priority'], $this->priority, $this->operator);
+    public function accept(LogEvent $event)
+    {
+        return version_compare($event['level'], $this->priority, $this->operator);
     }
 
     /**
      * @return int
      * @throws \RuntimeException
      */
-    protected function getPriority() {
+    protected function getPriority()
+    {
         if (empty($this->config['priority'])) {
             throw new \RuntimeException("Priority filter doesn't have priority");
         }

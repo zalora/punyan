@@ -11,6 +11,10 @@ namespace Zalora\Punyan\Filter;
  */
 abstract class AbstractFilter implements IFilter
 {
+    /**
+     * @var string
+     */
+    const FILTER_NAMESPACE_STUB = 'Zalora\Punyan\Filter\%s';
 
     /**
      * @var array
@@ -31,4 +35,23 @@ abstract class AbstractFilter implements IFilter
      * @return void
      */
     protected function init() {}
+
+    /**
+     * @param array $config
+     * @return \SplObjectStorage
+     */
+    public static function buildFilters(array $config)
+    {
+        $filters = new \SplObjectStorage();
+
+        foreach ($config as $filter) {
+            $filterName = key($filter);
+            $className = sprintf(static::FILTER_NAMESPACE_STUB,
+                ucfirst($filterName)
+            );
+            $filters->attach(new $className(current($filter)));
+        }
+
+        return $filters;
+    }
 }

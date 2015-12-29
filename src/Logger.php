@@ -10,13 +10,13 @@ namespace Zalora\Punyan;
 use SplObjectStorage;
 use Zalora\Punyan\Writer\IWriter;
 use Zalora\Punyan\Filter\IFilter;
-use Zalora\Punyan\Filter\Priority;
+use Zalora\Punyan\Filter\AbstractFilter;
 
 /**
  * @package Zalora\Punyan
  */
-class Logger implements ILogger {
-
+class Logger implements ILogger
+{
     /**
      * @var string
      */
@@ -42,44 +42,30 @@ class Logger implements ILogger {
      * @param string $appName
      * @param array $options
      */
-    public function __construct($appName, array $options) {
+    public function __construct($appName, array $options)
+    {
         $this->appName = $appName;
         $this->options = $options;
         $this->writers = new SplObjectStorage();
-        $this->filters = new SplObjectStorage();
+        $this->filters = AbstractFilter::buildFilters($this->options['filters']);
+        $this->writers = $this->buildWriters($this->options['writers']);
 
-        // Init logger filters
-        foreach ($this->options['filters'] as $filter) {
-            $filterName = key($filter);
-            $className = sprintf('Zalora\Punyan\Filter\%s',
-                ucfirst($filterName)
-            );
-            $this->filters->attach(new $className(current($filter)));
-        }
-
-        // Init writers
-        foreach ($this->options['writers'] as $writer) {
-            $writerName = key($writer);
-            $className = sprintf('Zalora\Punyan\Writer\%s',
-                ucfirst($writerName)
-            );
-            $this->writers->attach(new $className(current($writer)));
-        }
     }
 
     /**
-     * @param int $priority
+     * @param int $level
      * @param string $msg
      * @param array $context
      * @return void
      */
-    public function log($priority, $msg, array $context = array()) {
+    public function log($level, $msg, array $context = array())
+    {
         // Check for mute and existing writers
         if (count($this->writers) === 0 || $this->options['mute'] === true) {
             return;
         }
 
-        $logEvent = LogEvent::create($msg, $priority, $context);
+        $logEvent = LogEvent::create($level, $msg, $context, $this->appName);
 
         // Check global filters
         $accept = true;
@@ -91,42 +77,42 @@ class Logger implements ILogger {
             }
         }
 
-        if ($msg instanceof \Exception) {
-            echo $msg->getMessage() . PHP_EOL;
-        } else {
-            echo $msg . PHP_EOL;
-        }
-
-        if (!empty($context)) {
-            print_r($context);
+        // Send logevent to Writers (Threads would be cool here...)
+        /* @var $writer IWriter */
+        foreach ($this->writers as $writer) {
+            $writer->log($logEvent);
         }
     }
 
     /**
      * @param IWriter $writer
      */
-    public function addWriter(IWriter $writer) {
-        $this->writers->attach($writer->init());
+    public function addWriter(IWriter $writer)
+    {
+        $this->writers->attach($writer);
     }
 
     /**
      * @param IWriter $writer
      */
-    public function removeWriter(IWriter $writer) {
+    public function removeWriter(IWriter $writer)
+    {
         $this->writers->detach($writer);
     }
 
     /**
      * @param IFilter $filter
      */
-    public function addFilter(IFilter $filter) {
+    public function addFilter(IFilter $filter)
+    {
         $this->filters->attach($filter);
     }
 
     /**
      * @param IFilter $filter
      */
-    public function removeFilter(IFilter $filter) {
+    public function removeFilter(IFilter $filter)
+    {
         $this->filters->detach($filter);
     }
 
@@ -134,7 +120,8 @@ class Logger implements ILogger {
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function fatal($msg, array $context = array()) {
+    public function fatal($msg, array $context = array())
+    {
         $this->log(static::LEVEL_FATAL, $msg, $context);
     }
 
@@ -142,7 +129,8 @@ class Logger implements ILogger {
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function error($msg, array $context = array()) {
+    public function error($msg, array $context = array())
+    {
         $this->log(static::LEVEL_ERROR, $msg, $context);
     }
 
@@ -150,7 +138,8 @@ class Logger implements ILogger {
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function warn($msg, array $context = array()) {
+    public function warn($msg, array $context = array())
+    {
         $this->log(static::LEVEL_WARN, $msg, $context);
     }
 
@@ -158,7 +147,8 @@ class Logger implements ILogger {
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function info($msg, array $context = array()) {
+    public function info($msg, array $context = array())
+    {
         $this->log(static::LEVEL_INFO, $msg, $context);
     }
 
@@ -166,7 +156,8 @@ class Logger implements ILogger {
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function debug($msg, array $context = array()) {
+    public function debug($msg, array $context = array())
+    {
         $this->log(static::LEVEL_DEBUG, $msg, $context);
     }
 
@@ -174,8 +165,27 @@ class Logger implements ILogger {
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function trace($msg, array $context = array()) {
+    public function trace($msg, array $context = array())
+    {
         $this->log(static::LEVEL_TRACE, $msg, $context);
     }
 
+    /**
+     * @param array $config
+     * @return SplObjectStorage
+     */
+    protected function buildWriters(array $config)
+    {
+        $writers = new SplObjectStorage();
+
+        foreach ($config as $writer) {
+            $writerName = key($writer);
+            $className = sprintf('Zalora\Punyan\Writer\%s',
+                ucfirst($writerName)
+            );
+            $writers->attach(new $className(current($writer)));
+        }
+
+        return $writers;
+    }
 }

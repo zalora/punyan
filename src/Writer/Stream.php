@@ -6,31 +6,46 @@
 
 namespace Zalora\Punyan\Writer;
 
-class Stream extends AbstractWriter {
+use Zalora\Punyan\LogEvent;
 
+class Stream extends AbstractWriter
+{
     /**
      * @var mixed
      */
     protected $stream;
 
     /**
-     * Check if file exists and is writable
-     * @return AbstractWriter
+     * Open url/stream
+     * @return void
+     * @throws RuntimeException
      */
-    public function init() {
-        $url = $this->config['url'];
-
-        return $this;
+    public function init()
+    {
+        $stream = @fopen($this->config['url'], 'a');
+        if (!$stream) {
+            throw new RuntimeException(sprintf("Couldn't open resource '%s'", $this->config['url']));
+        }
+        $this->stream = $stream;
     }
 
     /**
-     * @param int $level
-     * @param string $msg
-     * @param array $context
+     * Not sure if that's needed
      * @return void
      */
-    protected function _write($level, $msg, array $context = array())
+    public function __destruct()
     {
-
+        @fclose($this->stream);
     }
+
+    /**
+     * @param LogEvent $logEvent
+     * @return void
+     */
+    protected function _write(LogEvent $logEvent)
+    {
+        $line = $this->formatter->format($logEvent);
+        fwrite($this->stream, $line);
+    }
+
 }

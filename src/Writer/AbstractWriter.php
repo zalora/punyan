@@ -6,20 +6,29 @@
 
 namespace Zalora\Punyan\Writer;
 
+use Zalora\Punyan\Formatter\Bunyan;
+use Zalora\Punyan\LogEvent;
+use Zalora\Punyan\Formatter\IFormatter;
+
 /**
  * @package Zalora\Punyan\Writer
  */
-abstract class AbstractWriter implements IWriter {
-
+abstract class AbstractWriter implements IWriter
+{
     /**
      * @var array
      */
     protected $config;
 
     /**
-     * @var array
+     * @var \SplObjectStorage
      */
-    protected $filters = array();
+    protected $filters;
+
+    /**
+     * @var IFormatter
+     */
+    protected $formatter;
 
     /**
      * Store configuration
@@ -28,26 +37,24 @@ abstract class AbstractWriter implements IWriter {
     public function __construct(array $config)
     {
         $this->config = $config;
+        $this->formatter = new Bunyan();
+
         $this->init();
     }
 
     /**
-     * @param int $level
-     * @param string $msg
-     * @param array $context
+     * @param LogEvent $logEvent
      * @return void
      */
-    public function log($level, $msg, array $context = array())
+    public function log(LogEvent $logEvent)
     {
-        $this->_write($level, $msg, $context);
+        $this->_write($logEvent);
     }
 
     /**
-     * @param int $level
-     * @param string $msg
-     * @param array $context
+     * @param LogEvent $logEvent
      * @return void
      */
-    protected abstract function _write($level, $msg, array $context = array());
+    protected abstract function _write(LogEvent $logEvent);
 
 }
