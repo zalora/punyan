@@ -13,7 +13,6 @@ use Zalora\Punyan\LogEvent;
  */
 class Priority extends AbstractFilter
 {
-
     /**
      * @var string
      */
