@@ -51,10 +51,15 @@ class Regexp extends AbstractFilter
 
     /**
      * @return void
+     * @throws \RuntimeException
      */
     public function init()
     {
         $this->pattern = $this->config['pattern'];
+
+        if (@preg_match($this->pattern, '') === false) {
+            throw new \RuntimeException('Invalid regular expression: ' . $this->pattern);
+        }
 
         if (empty($this->config['field'])) {
             $this->field = static::DEFAULT_FIELD;

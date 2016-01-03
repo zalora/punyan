@@ -6,8 +6,8 @@
 
 namespace Zalora\Punyan\Writer;
 
-use Zalora\Punyan\Filter\IFilter;
 use Zalora\Punyan\LogEvent;
+use Zalora\Punyan\Filter\IFilter;
 use Zalora\Punyan\Formatter\Bunyan;
 use Zalora\Punyan\Formatter\IFormatter;
 use Zalora\Punyan\Filter\AbstractFilter;

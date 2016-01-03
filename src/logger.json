@@ -11,7 +11,7 @@
         "filters": [
           { "priority": { "priority": "warn", "operator": ">=" } },
           { "regexp": { "pattern": "/Hallo/", "field": "", "returnValueOnMissingField": false } },
-          { "ns": { "namespace": "Bob\\Shop" } },
+          { "ns": { "namespace": "Service", "searchMethod": "contains" } },
           {
             "callback": {
               "function": "Bob_Bootstrap::camelCaseFilter",
