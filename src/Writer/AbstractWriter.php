@@ -51,6 +51,11 @@ abstract class AbstractWriter implements IWriter
      */
     public function log(LogEvent $logEvent)
     {
+        // Check for muting
+        if ($this->config['mute'] === true) {
+            return;
+        }
+
         // Check writer filters
         $accept = true;
 

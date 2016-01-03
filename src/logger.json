@@ -10,8 +10,8 @@
         "url": "php://stdout",
         "filters": [
           { "priority": { "priority": "warn", "operator": ">=" } },
-          { "regexp": { "pattern": "/Hallor/", "field": "msgsg", "returnValueOnMissingField": false } },
-          { "ns": { "namespace": "Zalora\\Bootstrap" } },
+          { "regexp": { "pattern": "/Hallo/", "field": "", "returnValueOnMissingField": false } },
+          { "ns": { "namespace": "Bob\\Shop" } },
           {
             "callback": {
               "function": "Bob_Bootstrap::camelCaseFilter",
