@@ -6,9 +6,11 @@
 
 namespace Zalora\Punyan\Writer;
 
-use Zalora\Punyan\Formatter\Bunyan;
+use Zalora\Punyan\Filter\IFilter;
 use Zalora\Punyan\LogEvent;
+use Zalora\Punyan\Formatter\Bunyan;
 use Zalora\Punyan\Formatter\IFormatter;
+use Zalora\Punyan\Filter\AbstractFilter;
 
 /**
  * @package Zalora\Punyan\Writer
@@ -38,6 +40,7 @@ abstract class AbstractWriter implements IWriter
     {
         $this->config = $config;
         $this->formatter = new Bunyan();
+        $this->filters = AbstractFilter::buildFilters($config['filters']);
 
         $this->init();
     }
@@ -48,6 +51,16 @@ abstract class AbstractWriter implements IWriter
      */
     public function log(LogEvent $logEvent)
     {
+        // Check writer filters
+        $accept = true;
+
+        /* @var $filter IFilter */
+        foreach ($this->filters as $filter) {
+            if (!($filter->accept($logEvent) && $accept)) {
+                return;
+            }
+        }
+
         $this->_write($logEvent);
     }
 
@@ -56,5 +69,4 @@ abstract class AbstractWriter implements IWriter
      * @return void
      */
     protected abstract function _write(LogEvent $logEvent);
-
 }

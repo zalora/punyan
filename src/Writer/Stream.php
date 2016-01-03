@@ -8,6 +8,9 @@ namespace Zalora\Punyan\Writer;
 
 use Zalora\Punyan\LogEvent;
 
+/**
+ * @package Zalora\Punyan\Writer
+ */
 class Stream extends AbstractWriter
 {
     /**
@@ -47,5 +50,4 @@ class Stream extends AbstractWriter
         $line = $this->formatter->format($logEvent);
         fwrite($this->stream, $line);
     }
-
 }

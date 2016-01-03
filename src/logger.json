@@ -7,11 +7,11 @@
     {
       "Stream": {
         "mute": false,
-        "url": "file:///Users/whuesken/test.log",
+        "url": "php://stdout",
         "filters": [
-          { "priority": {"priority": "warn", "operator": ">="} },
-          { "regexp": "/beer/" },
-          { "namespace": "Zalora\\Bootstrap" },
+          { "priority": { "priority": "warn", "operator": ">=" } },
+          { "regexp": { "pattern": "/Hallor/", "field": "msgsg", "returnValueOnMissingField": false } },
+          { "ns": { "namespace": "Zalora\\Bootstrap" } },
           {
             "callback": {
               "function": "Bob_Bootstrap::camelCaseFilter",
