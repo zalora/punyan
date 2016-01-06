@@ -17,7 +17,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    protected static $noCallback = 'Try to call me!';
+    public static $noCallback = 'Try to call me!';
 
     /**
      * @var string
@@ -63,6 +63,23 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($callbackFilterTrue->accept($logEvent));
         $this->assertFalse($callbackFilterFalse->accept($logEvent));
         $this->assertTrue($callbackFilterNoParam->accept($logEvent));
+    }
+
+    /**
+     * @covers Zalora\Punyan\Filter\Callback::accept
+     */
+    public function testInvalidCallback() {
+        $this->setExpectedException('\\RuntimeException');
+
+        $configNotCallable = json_decode(
+            sprintf(
+                $this->callbackConfigStub,
+                str_replace('\\', '\\\\', __CLASS__) . '::$noCallback'
+            ),
+            true
+        );
+
+        new Callback($configNotCallable);
     }
 
     public static function callbackReturningTrue(LogEvent $logEvent)
