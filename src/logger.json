@@ -13,10 +13,7 @@
           { "regexp": { "pattern": "/Hallo/", "field": "", "returnValueOnMissingField": false } },
           { "ns": { "namespace": "Service", "searchMethod": "contains" } },
           {
-            "callback": {
-              "function": "Bob_Bootstrap::camelCaseFilter",
-              "options": "Zalora_Test"
-            }
+            "callback": { "function": "Bob_Bootstrap::someFilter" }
           }
         ]
       }
