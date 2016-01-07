@@ -3,6 +3,7 @@
  * Execute code from the given callback method
  * The LogEvent object is given as parameter, so the callback must be
  * either accept no parameter or the log event parameter with type hinting
+ * If the callback doesn't return anything, null is casted to boolean false
  * @author Wolfram Huesken <wolfram.huesken@zalora.com>
  */
 
@@ -39,6 +40,6 @@ class Callback extends AbstractFilter
      */
     public function accept(LogEvent $event)
     {
-        return call_user_func($this->func, $event);
+        return (bool) call_user_func($this->func, $event);
     }
 }

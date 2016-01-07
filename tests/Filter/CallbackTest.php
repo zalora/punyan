@@ -54,15 +54,25 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
             true
         );
 
+        $configNoParamNoReturn = json_decode(
+            sprintf(
+                $this->callbackConfigStub,
+                str_replace('\\', '\\\\', __CLASS__) . '::callbackWithoutParameterReturningVoid'
+            ),
+            true
+        );
+
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit: ' . __CLASS__);
 
         $callbackFilterTrue = new Callback($configTrue);
         $callbackFilterFalse = new Callback($configFalse);
         $callbackFilterNoParam = new Callback($configNoParam);
+        $callbackFilterNoParamNoReturn = new Callback($configNoParamNoReturn);
 
         $this->assertTrue($callbackFilterTrue->accept($logEvent));
         $this->assertFalse($callbackFilterFalse->accept($logEvent));
         $this->assertTrue($callbackFilterNoParam->accept($logEvent));
+        $this->assertFalse($callbackFilterNoParamNoReturn->accept($logEvent));
     }
 
     /**
@@ -82,18 +92,36 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
         new Callback($configNotCallable);
     }
 
+    /**
+     * @param LogEvent $logEvent
+     * @return bool
+     */
     public static function callbackReturningTrue(LogEvent $logEvent)
     {
         return true;
     }
 
+    /**
+     * @param LogEvent $logEvent
+     * @return bool
+     */
     public static function callbackReturningFalse(LogEvent $logEvent)
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public static function callbackWithoutParameterReturningTrue()
     {
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function callbackWithoutParameterReturningVoid()
+    {
     }
 }
