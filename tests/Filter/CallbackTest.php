@@ -62,7 +62,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
             true
         );
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit: ' . __CLASS__);
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit');
 
         $callbackFilterTrue = new Callback($configTrue);
         $callbackFilterFalse = new Callback($configFalse);
