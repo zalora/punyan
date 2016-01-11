@@ -1,11 +1,8 @@
 <?php
 /**
- * Check if the namespace + classname of the class either starts with the given string
- * or contains the given string (search methods: (startsWith|contains). The former is the default
- * If the call comes from a script without classname, it's filtered out
- *
- * I'm using debug_backtrace(), it's surprisingly fast, so I don't
- * see any problems in using it, although it feels a bit hacky
+ * Check if the namespace + classname of the class either starts with the given string,
+ * contains the given string or matches a regular expression (search methods: (startsWith|contains|regexp))
+ * 'startsWith' is the default, if class is not set, the message is sorted out
  *
  * @author Wolfram Huesken <wolfram.huesken@zalora.com>
  */
@@ -47,11 +44,6 @@ class Ns extends AbstractFilter
     /**
      * @var string
      */
-    protected $logClassNamespace;
-
-    /**
-     * @var string
-     */
     protected $searchMethod;
 
     /**
@@ -70,12 +62,6 @@ class Ns extends AbstractFilter
     public function init()
     {
         $this->expectedNamespace = $this->config['namespace'];
-        $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        $bt = array_pop($bt);
-
-        if (!empty($bt['class'])) {
-            $this->logClassNamespace = $bt['class'];
-        }
 
         if (empty($this->config['searchMethod'])) {
             $this->searchMethod = static::DEFAULT_SEARCH_METHOD;
@@ -102,22 +88,22 @@ class Ns extends AbstractFilter
      */
     public function accept(LogEvent $event)
     {
-        if (empty($this->logClassNamespace)) {
+        if (empty($event['class'])) {
             return false;
         }
 
         switch ($this->searchMethod) {
             case static::SEARCH_METHOD_STARTS_WITH:
-                return (strpos($this->logClassNamespace, $this->expectedNamespace) === 0);
+                return (strpos($event['class'], $this->expectedNamespace) === 0);
             case static::SEARCH_METHOD_CONTAINS:
-                $pos = strpos($this->logClassNamespace, $this->expectedNamespace);
+                $pos = strpos($event['class'], $this->expectedNamespace);
                 if ($pos === false) {
                     return false;
                 }
 
                 return ($pos >= 0);
             case static::SEARCH_METHOD_REGEXP:
-                return (preg_match($this->expectedNamespace, $this->logClassNamespace) > 0);
+                return (preg_match($this->expectedNamespace, $event['class']) > 0);
         }
     }
 }
