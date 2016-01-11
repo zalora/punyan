@@ -17,7 +17,7 @@ trait LoggerTrait
      * @param array $context
      * @throws \RuntimeException
      */
-    public function fatal($msg, array $context = array())
+    public function fatal($msg, array $context = [])
     {
         $context['class'] = __CLASS__;
         LoggerProxy::fatal($msg, $context);
@@ -28,7 +28,7 @@ trait LoggerTrait
      * @param array $context
      * @throws \RuntimeException
      */
-    public function error($msg, array $context = array())
+    public function error($msg, array $context = [])
     {
         $context['class'] = __CLASS__;
         LoggerProxy::error($msg, $context);
@@ -39,7 +39,7 @@ trait LoggerTrait
      * @param array $context
      * @throws \RuntimeException
      */
-    public function warn($msg, array $context = array())
+    public function warn($msg, array $context = [])
     {
         $context['class'] = __CLASS__;
         LoggerProxy::warn($msg, $context);
@@ -50,7 +50,7 @@ trait LoggerTrait
      * @param array $context
      * @throws \RuntimeException
      */
-    public function info($msg, array $context = array())
+    public function info($msg, array $context = [])
     {
         $context['class'] = __CLASS__;
         LoggerProxy::info($msg, $context);
@@ -61,7 +61,7 @@ trait LoggerTrait
      * @param array $context
      * @throws \RuntimeException
      */
-    public function debug($msg, array $context = array())
+    public function debug($msg, array $context = [])
     {
         $context['class'] = __CLASS__;
         LoggerProxy::debug($msg, $context);
@@ -72,7 +72,7 @@ trait LoggerTrait
      * @param array $context
      * @throws \RuntimeException
      */
-    public function trace($msg, array $context = array())
+    public function trace($msg, array $context = [])
     {
         $context['class'] = __CLASS__;
         LoggerProxy::trace($msg, $context);

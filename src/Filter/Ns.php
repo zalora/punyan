@@ -57,7 +57,7 @@ class Ns extends AbstractFilter
 
     /**
      * @return void
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function init()
     {

@@ -58,7 +58,7 @@ class Logger implements ILogger
      * @param array $context
      * @return void
      */
-    public function log($level, $msg, array $context = array())
+    public function log($level, $msg, array $context = [])
     {
         // Check for mute and existing writers
         if (count($this->writers) === 0 || $this->options['mute'] === true) {
@@ -120,7 +120,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function fatal($msg, array $context = array())
+    public function fatal($msg, array $context = [])
     {
         $this->log(static::LEVEL_FATAL, $msg, $context);
     }
@@ -129,7 +129,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function error($msg, array $context = array())
+    public function error($msg, array $context = [])
     {
         $this->log(static::LEVEL_ERROR, $msg, $context);
     }
@@ -138,7 +138,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function warn($msg, array $context = array())
+    public function warn($msg, array $context = [])
     {
         $this->log(static::LEVEL_WARN, $msg, $context);
     }
@@ -147,7 +147,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function info($msg, array $context = array())
+    public function info($msg, array $context = [])
     {
         $this->log(static::LEVEL_INFO, $msg, $context);
     }
@@ -156,7 +156,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function debug($msg, array $context = array())
+    public function debug($msg, array $context = [])
     {
         $this->log(static::LEVEL_DEBUG, $msg, $context);
     }
@@ -165,7 +165,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function trace($msg, array $context = array())
+    public function trace($msg, array $context = [])
     {
         $this->log(static::LEVEL_TRACE, $msg, $context);
     }
