@@ -6,13 +6,14 @@
   "version": "0.0.1-dev",
   "homepage": "https://github.com/zalora/punyan",
   "minimum-stability": "stable",
-  "license": "proprietary",
+  "license": "MIT",
   "authors": [{
     "name": "Wolfram Huesken",
-    "email": "wolfram.huesken@zalora.com"
+    "email": "wolfram.huesken@zalora.com",
+    "homepage": "http://www.zalora.com"
   }],
   "require": {
-    "php": ">= 5.3.0"
+    "php": ">= 5.4.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~4"

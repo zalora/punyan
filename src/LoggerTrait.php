@@ -12,8 +12,69 @@ namespace Zalora\Punyan;
  */
 trait LoggerTrait
 {
-    public function warn($msg, array $context = array()) {
+    /**
+     * @param string|\Exception $msg
+     * @param array $context
+     * @throws \RuntimeException
+     */
+    public function fatal($msg, array $context = array())
+    {
+        $context['class'] = __CLASS__;
+        LoggerProxy::fatal($msg, $context);
+    }
+
+    /**
+     * @param string|\Exception $msg
+     * @param array $context
+     * @throws \RuntimeException
+     */
+    public function error($msg, array $context = array())
+    {
+        $context['class'] = __CLASS__;
+        LoggerProxy::error($msg, $context);
+    }
+
+    /**
+     * @param string|\Exception $msg
+     * @param array $context
+     * @throws \RuntimeException
+     */
+    public function warn($msg, array $context = array())
+    {
         $context['class'] = __CLASS__;
         LoggerProxy::warn($msg, $context);
+    }
+
+    /**
+     * @param string|\Exception $msg
+     * @param array $context
+     * @throws \RuntimeException
+     */
+    public function info($msg, array $context = array())
+    {
+        $context['class'] = __CLASS__;
+        LoggerProxy::info($msg, $context);
+    }
+
+    /**
+     * @param string|\Exception $msg
+     * @param array $context
+     * @throws \RuntimeException
+     */
+    public function debug($msg, array $context = array())
+    {
+        $context['class'] = __CLASS__;
+        LoggerProxy::debug($msg, $context);
+    }
+
+    /**
+     * @param string|\Exception $msg
+     * @param array $context
+     * @throws \RuntimeException
+     */
+    public function trace($msg, array $context = array())
+    {
+        $context['class'] = __CLASS__;
+        LoggerProxy::trace($msg, $context);
     }
 }
