@@ -1,5 +1,5 @@
 {
-  "name": "Zalora/punyan",
+  "name": "zalora/punyan",
   "type": "library",
   "description": "PHP implementation of Bunyan",
   "keywords": ["bunyan", "logger", "json"],
