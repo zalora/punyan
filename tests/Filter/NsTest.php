@@ -7,7 +7,6 @@
 namespace Zalora\Punyan\Filter;
 
 use Zalora\Punyan\ILogger;
-use Zalora\Punyan\Logger;
 use Zalora\Punyan\LogEvent;
 
 /**
