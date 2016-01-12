@@ -88,22 +88,22 @@ class Ns extends AbstractFilter
      */
     public function accept(LogEvent $event)
     {
-        if (empty($event['class'])) {
+        if (empty($event['origin'])) {
             return false;
         }
 
         switch ($this->searchMethod) {
             case static::SEARCH_METHOD_STARTS_WITH:
-                return (strpos($event['class'], $this->expectedNamespace) === 0);
+                return (strpos($event['origin']['class'], $this->expectedNamespace) === 0);
             case static::SEARCH_METHOD_CONTAINS:
-                $pos = strpos($event['class'], $this->expectedNamespace);
+                $pos = strpos($event['origin']['class'], $this->expectedNamespace);
                 if ($pos === false) {
                     return false;
                 }
 
                 return ($pos >= 0);
             case static::SEARCH_METHOD_REGEXP:
-                return (preg_match($this->expectedNamespace, $event['class']) > 0);
+                return (preg_match($this->expectedNamespace, $event['origin']['class']) > 0);
         }
     }
 }

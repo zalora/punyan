@@ -78,7 +78,7 @@ class LogEvent extends \ArrayObject implements ILogger
      */
     protected static function exceptionToArray(\Exception $ex)
     {
-        $e = [];
+        $e = array();
         $e['file'] = $ex->getFile();
         $e['message'] = $ex->getMessage();
         $e['code'] = $ex->getCode();

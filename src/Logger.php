@@ -58,11 +58,17 @@ class Logger implements ILogger
      * @param array $context
      * @return void
      */
-    public function log($level, $msg, array $context = [])
+    public function log($level, $msg, array $context = array())
     {
         // Check for mute and existing writers
         if (count($this->writers) === 0 || $this->options['mute'] === true) {
             return;
+        }
+
+        // Add caller info to context (Also needed for ns filter to work)
+        $origin = static::getLogOrigin(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
+        if (!empty($origin)) {
+            $context['origin'] = $origin;
         }
 
         $logEvent = LogEvent::create($level, $msg, $context, $this->appName);
@@ -77,7 +83,7 @@ class Logger implements ILogger
             }
         }
 
-        // Send logevent to Writers (Threads would be cool here...)
+        // Send log event to Writers (Threads would be cool here...)
         /* @var $writer IWriter */
         foreach ($this->writers as $writer) {
             $writer->log($logEvent);
@@ -120,7 +126,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function fatal($msg, array $context = [])
+    public function fatal($msg, array $context = array())
     {
         $this->log(static::LEVEL_FATAL, $msg, $context);
     }
@@ -129,7 +135,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function error($msg, array $context = [])
+    public function error($msg, array $context = array())
     {
         $this->log(static::LEVEL_ERROR, $msg, $context);
     }
@@ -138,7 +144,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function warn($msg, array $context = [])
+    public function warn($msg, array $context = array())
     {
         $this->log(static::LEVEL_WARN, $msg, $context);
     }
@@ -147,7 +153,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function info($msg, array $context = [])
+    public function info($msg, array $context = array())
     {
         $this->log(static::LEVEL_INFO, $msg, $context);
     }
@@ -156,7 +162,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function debug($msg, array $context = [])
+    public function debug($msg, array $context = array())
     {
         $this->log(static::LEVEL_DEBUG, $msg, $context);
     }
@@ -165,7 +171,7 @@ class Logger implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      */
-    public function trace($msg, array $context = [])
+    public function trace($msg, array $context = array())
     {
         $this->log(static::LEVEL_TRACE, $msg, $context);
     }
@@ -187,5 +193,35 @@ class Logger implements ILogger
         }
 
         return $writers;
+    }
+
+    /**
+     * @param array $backtrace
+     * @return array
+     */
+    public static function getLogOrigin(array $backtrace) {
+        // Safely kick the first item
+        array_shift($backtrace);
+
+        $previousItem = null;
+        foreach ($backtrace as $stackItem) {
+            if (empty($stackItem['class'])) {
+                unset($stackItem['type']);
+                return $stackItem['class'];
+            }
+
+            if (strpos(ltrim($stackItem['class'], '\\'), __NAMESPACE__) === 0) {
+                $previousItem = $stackItem;
+                continue;
+            }
+
+            unset($stackItem['type']);
+            $stackItem['file'] = $previousItem['file'];
+            $stackItem['line'] = $previousItem['line'];
+
+            return $stackItem;
+        }
+
+        return array();
     }
 }
