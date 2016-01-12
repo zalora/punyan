@@ -10,7 +10,7 @@ namespace Zalora\Punyan;
  * Acts as a proxy to the real logger
  * @package Zalora\Punyan
  */
-class LoggerProxy
+class ZLog
 {
     /**
      * @var Logger
