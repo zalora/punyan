@@ -49,6 +49,11 @@ abstract class AbstractFilter implements IFilter
             $className = sprintf(static::FILTER_NAMESPACE_STUB,
                 ucfirst($filterName)
             );
+
+            if (!class_exists($className)) {
+                throw new \RuntimeException(sprintf("Class '%s' not found...", $className));
+            }
+
             $filters->attach(new $className(current($filter)));
         }
 
