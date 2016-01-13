@@ -62,6 +62,15 @@ class LogEvent extends \ArrayObject implements ILogger
 
         // Set formatted UTC timestamp (Seriously PHP?)
         $timeParts = explode('.', microtime(true));
+
+        // If you're lucky and PHP returns the exact second...
+        if (count($timeParts) === 1) {
+            $timeParts[1] = '0000';
+        }
+
+        // Add some padding if needed
+        $timeParts[1] = str_pad($timsParts[1], 4, '0');
+
         $dt = new \DateTime();
         $dt->setTimezone(new \DateTimeZone('UTC'));
         $dt->setTimestamp($timeParts[0]);
