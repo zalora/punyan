@@ -69,7 +69,7 @@ class LogEvent extends \ArrayObject implements ILogger
         }
 
         // Add some padding if needed
-        $timeParts[1] = str_pad($timsParts[1], 4, '0');
+        $timeParts[1] = str_pad($timeParts[1], 4, '0');
 
         $dt = new \DateTime();
         $dt->setTimezone(new \DateTimeZone('UTC'));
