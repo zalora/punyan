@@ -11,7 +11,6 @@ namespace Zalora\Punyan;
  * @package Zalora\Punyan
  *
  * @method int getLevel() getLevel()
- * @method void setLevel() setLevel(int $level)
  *
  * @method string getMsg() getMsg()
  * @method void setMsg() setMsg(string $msg)
@@ -23,7 +22,6 @@ namespace Zalora\Punyan;
  * @method void setException() setException(array $exception)
  *
  * @method string getName() getName()
- * @method void setName() setName(string $name)
  *
  * @method string getHostname() getHostname()
  * @method void setHostname() setHostname(string $hostname)
@@ -43,6 +41,7 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param array $context
      * @param string $appName
      * @return LogEvent
+     * @throws \InvalidArgumentException
      */
     public static function create($level, $msg, array $context, $appName)
     {
@@ -134,5 +133,29 @@ class LogEvent extends \ArrayObject implements ILogger
         }
 
         return null;
+    }
+
+    /**
+     * @param int $level
+     * @throws \InvalidArgumentException
+     */
+    public function setLevel($level) {
+        if ($level <= 0) {
+            throw new \InvalidArgumentException('Level must be a positive integer, @see ILogger');
+        }
+
+        $this['level'] = (int) $level;
+    }
+
+    /**
+     * @param string $name
+     * @throws \InvalidArgumentException
+     */
+    public function setName($name) {
+        if (empty($name)) {
+            throw new \InvalidArgumentException('App name is mandatory');
+        }
+
+        $this['name'] = $name;
     }
 }

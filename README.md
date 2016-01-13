@@ -6,6 +6,50 @@ Punyan is the PHP implementation of the fantastic [Bunyan Logger](https://github
 
 `$ composer require zalora/punyan`
 
+## The Config file
+
+The example config is written in JSON-format, every other format works, too as long as it represents the same structure. The logger itself expects an array with the same structure.
+
+```json
+{
+  "mute": false,
+  "filters": [
+    { "priority": {"priority": "info", "operator": ">="} }
+  ],
+  "writers": [
+    {
+      "Stream": {
+        "mute": false,
+        "url": "php://stdout",
+        "filters": [
+          { "priority": { "priority": "warn", "operator": ">=" } },
+          { "regexp": { "pattern": "/Hallo/", "field": "", "returnValueOnMissingField": false } },
+          { "ns": { "namespace": "Service", "searchMethod": "contains" } },
+          {
+            "callback": { "function": "Bob_Bootstrap::someFilter" }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+The top level mute mutes the whole logger, the mute inside the writers only applies for this specific writer. Same for the filters.
+
+Every logger can have zero or more filters and writers, every writer can have zero or more filters.
+
+### Available Filters
+
+* Priority
+* Namespace
+* Regexp
+*
+
+#### Priority
+
+
+
 ## FAQs
 
 ### Why reinvent the wheel?

@@ -39,12 +39,17 @@ abstract class AbstractFilter implements IFilter
     /**
      * @param array $config
      * @return \SplObjectStorage
+     * @throws \RuntimeException
      */
     public static function buildFilters(array $config)
     {
         $filters = new \SplObjectStorage();
 
         foreach ($config as $filter) {
+            if (empty($filter) || !is_array($filter)) {
+                throw new \RuntimeException('Invalid configuration');
+            }
+
             $filterName = key($filter);
             $className = sprintf(static::FILTER_NAMESPACE_STUB,
                 ucfirst($filterName)
