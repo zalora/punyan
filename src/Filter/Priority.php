@@ -65,8 +65,8 @@ class Priority extends AbstractFilter
             $priority = @constant(sprintf('Zalora\Punyan\ILogger::LEVEL_%s', strtoupper($priority)));
         }
 
-        if (!is_numeric($priority)) {
-            throw new \RuntimeException('Priority must be a string-constant defined in ILogger');
+        if (!is_numeric($priority) || $priority <= 0) {
+            throw new \InvalidArgumentException('Priority must be a string-constant defined in ILogger');
         }
 
         return (int) $priority;

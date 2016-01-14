@@ -60,7 +60,11 @@ class LogEvent extends \ArrayObject implements ILogger
         $logEvent->setName($appName);
 
         // Set formatted UTC timestamp (Seriously PHP?)
-        $timeParts = explode('.', microtime(true));
+        if (!empty($context['time'])) {
+            $timeParts = explode('.', $context['time']);
+        } else {
+            $timeParts = explode('.', microtime(true));
+        }
 
         // If you're lucky and PHP returns the exact second...
         if (count($timeParts) === 1) {
@@ -109,12 +113,12 @@ class LogEvent extends \ArrayObject implements ILogger
     public function __call($name, $arguments)
     {
         if (strlen($name) < 4) {
-            throw new \RuntimeException('Logevents only support getters and setters');
+            throw new \BadFunctionCallException('Logevents only support getters and setters');
         }
 
         $prefix = substr($name, 0, 3);
         if ($prefix !== 'get' && $prefix !== 'set') {
-            throw new \RuntimeException('Logevents only support getters and setters');
+            throw new \BadFunctionCallException('Logevents only support getters and setters');
         }
 
         $varName = lcfirst(substr($name, 3));
@@ -127,7 +131,7 @@ class LogEvent extends \ArrayObject implements ILogger
 
         if ($prefix === 'set') {
             if (empty($arguments)) {
-                throw new \RuntimeException('Setters should set a value, right?');
+                throw new \InvalidArgumentException('Setters should set a value, right?');
             }
             $this[$varName] = $arguments[0];
         }

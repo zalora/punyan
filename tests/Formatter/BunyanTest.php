@@ -15,9 +15,11 @@ use Zalora\Punyan\LogEvent;
 class BunyanTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Zalora\Punyan\Formatter\Bunyan::format
+     * Here some mandatory fields for the Bunyan format are added. The other fields
+     * which make up the format are tested in the LogEvent test
      */
-    public function testFormat() {
+    public function testFormat()
+    {
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array(), 'PHPUnit');
         $formatter = new Bunyan();
         $formattedString = $formatter->format($logEvent);
@@ -26,7 +28,6 @@ class BunyanTest extends \PHPUnit_Framework_TestCase
         $this->assertJson($formattedString);
 
         // Decode it and test if the fields the formatter added are present
-        // The other fields will be tested in the LogEvent test
         $logEventArray = json_decode($formattedString, true);
 
         $this->assertNotEmpty($logEventArray);

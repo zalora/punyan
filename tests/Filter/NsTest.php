@@ -20,9 +20,10 @@ class NsTest extends \PHPUnit_Framework_TestCase
     protected $nsConfigStub = '{ "namespace": "%s", "searchMethod": "%s" }';
 
     /**
-     * @covers Zalora\Punyan\Filter\Ns::accept
+     * Tests some variants of the startsWith filter
      */
-    public function testStartsWith() {
+    public function testStartsWith()
+    {
         $matchingConfig = json_decode(sprintf($this->nsConfigStub, 'Zalora\\\\Punyan', Ns::SEARCH_METHOD_STARTS_WITH), true);
         $notMatchingConfig = json_decode(sprintf($this->nsConfigStub, 'Free_Beer', Ns::SEARCH_METHOD_STARTS_WITH), true);
 
@@ -44,9 +45,10 @@ class NsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Ns::accept
+     * Same for contains
      */
-    public function testContains() {
+    public function testContains()
+    {
         $matchingConfig = json_decode(sprintf($this->nsConfigStub, 'Test', Ns::SEARCH_METHOD_CONTAINS), true);
         $notMatchingConfig = json_decode(sprintf($this->nsConfigStub, 'Foo', Ns::SEARCH_METHOD_CONTAINS), true);
 
@@ -68,9 +70,10 @@ class NsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Ns::accept
+     * And same for regular expressions
      */
-    public function testRegexp() {
+    public function testRegexp()
+    {
         $matchingConfig = json_decode(sprintf($this->nsConfigStub, '/Test/', Ns::SEARCH_METHOD_REGEXP), true);
         $notMatchingConfig = json_decode(sprintf($this->nsConfigStub, '/^Foo/', Ns::SEARCH_METHOD_REGEXP), true);
 
@@ -92,9 +95,50 @@ class NsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Ns::accept
+     * If you don't provide a search method, 'startsWith' is set as default
      */
-    public function testInvalidRegexp() {
+    public function testEmptySearchMethod()
+    {
+        $config = json_decode(sprintf('{ "namespace": "%s" }', 'Zalora\\\\Punyan'), true);
+        $filter = new Ns($config);
+
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
+        $logEvent['origin'] = array(
+            'class' => __CLASS__
+        );
+
+        $this->assertTrue($filter->accept($logEvent));
+    }
+
+    /**
+     * If no origin is provided, the filter returns false
+     */
+    public function testEmptyOrigin()
+    {
+        $config = json_decode(sprintf('{ "namespace": "%s" }', 'Zalora\\\\Punyan'), true);
+        $filter = new Ns($config);
+
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
+
+        $this->assertFalse($filter->accept($logEvent));
+    }
+
+    /**
+     * Invalid search methods lead to a RuntimeException
+     */
+    public function testInvalidSearchMethod()
+    {
+        $this->setExpectedException('\\RuntimeException');
+
+        $config = json_decode(sprintf($this->nsConfigStub, 'Zalora\\\\Punyan', 'dowser'), true);
+        new Ns($config);
+    }
+
+    /**
+     * All regular expressions are tested during init, invalid regular expressions lead to a RuntimeException
+     */
+    public function testInvalidRegexp()
+    {
         $this->setExpectedException('\\RuntimeException');
 
         $config = json_decode(sprintf($this->nsConfigStub, '^Foo', Ns::SEARCH_METHOD_REGEXP), true);

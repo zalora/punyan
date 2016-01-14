@@ -25,11 +25,10 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
     protected $callbackConfigStub = '{ "function": "%s" }';
 
     /**
-     * Backslash as the namespace separator is
-     * @covers Zalora\Punyan\Filter\Callback::accept
+     * Test working callbacks with all possible outcomes
      */
-    public function testWorkingCallback() {
-
+    public function testWorkingCallback()
+    {
         $configTrue = json_decode(
             sprintf(
                 $this->callbackConfigStub,
@@ -76,9 +75,10 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Callback::accept
+     * Invalid callbacks lead to a RuntimeException
      */
-    public function testInvalidCallback() {
+    public function testInvalidCallback()
+    {
         $this->setExpectedException('\\RuntimeException');
 
         $configNotCallable = json_decode(
@@ -119,7 +119,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return bool
+     * @return void
      */
     public static function callbackWithoutParameterReturningVoid()
     {

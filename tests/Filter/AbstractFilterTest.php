@@ -19,7 +19,7 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
     protected $logEvent;
 
     /**
-     * @covers Zalora\Punyan\Filter\AbstractFilter::buildFilters
+     * An empty filters config array gives you an empty SplObjectStorage
      */
     public function testEmptyFilterConfig()
     {
@@ -30,15 +30,15 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\AbstractFilter::buildFilters
+     * Passing in a wrongly structured filter config throws an InvalidArgumentException
      */
     public function testInvalidFilterConfig() {
-        $this->setExpectedException('\\RuntimeException');
+        $this->setExpectedException('\\InvalidArgumentException');
         AbstractFilter::buildFilters(array(1, 2, 3, 'CareBear'));
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\AbstractFilter::buildFilters
+     * A correctly structured, but still wrong filter config throws a RuntimeException
      */
     public function testAnotherInvalidFilterConfig() {
         $this->setExpectedException('\\RuntimeException');
@@ -46,7 +46,7 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\AbstractFilter::buildFilters
+     * Normal operating builder
      */
     public function testBuildFilters() {
         $config = array(

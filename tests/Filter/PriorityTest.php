@@ -30,7 +30,7 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
     protected $filters = array();
 
     /**
-     * Create some log events with different prios
+     * Create some log events with different priorities
      */
     protected function setUp()
     {
@@ -42,9 +42,11 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Priority::accept
+     * In normal environments an operator shouldn't be defined, this setting is assumed as
+     * default for most users
      */
-    public function testGreaterOrEqualDefaultOperator() {
+    public function testGreaterOrEqualDefaultOperator()
+    {
         $config = json_decode(sprintf($this->priorityConfigDefaultStub, 'warn'), true);
         $priorityFilter = new Priority($config);
 
@@ -59,9 +61,10 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Priority::accept
+     * Zend has it, so we support it, too :D
      */
-    public function testGreaterOperator() {
+    public function testGreaterOperator()
+    {
         $config = json_decode(sprintf($this->priorityConfigStub, 'warn', '>'), true);
         $priorityFilter = new Priority($config);
 
@@ -76,14 +79,50 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Priority::accept
+     * In this edge case nothing is locked (That's why you usually don't mess around with the operator)
      */
-    public function testFatalFilterWithLesserOperator() {
+    public function testFatalFilterWithLesserOperator()
+    {
         $config = json_decode(sprintf($this->priorityConfigStub, 'fatal', '>'), true);
         $priorityFatal = new Priority($config);
 
         // Fatal with greater operator is like muting
         $this->assertFalse($priorityFatal->accept($this->filters[ILogger::LEVEL_FATAL]));
         $this->assertFalse($priorityFatal->accept($this->filters[ILogger::LEVEL_ERROR]));
+    }
+
+    /**
+     * Initializing a prio filter without prio gives you a RuntimeException
+     */
+    public function testConfigWithMissingPriority()
+    {
+        $this->setExpectedException('\\RuntimeException');
+        new Priority(array());
+    }
+
+    /**
+     * Usually you would configure the priority with a string, e.g. 'warn', but using the number is ok as well
+     */
+    public function testConfigWithNumericPriority()
+    {
+        new Priority(array('priority' => 10));
+    }
+
+    /**
+     * Priorities <= 0 are invalid (of course) and trigger an InvalidArgumentException
+     */
+    public function testConfigWithInvalidNumericPriority()
+    {
+        $this->setExpectedException('\\InvalidArgumentException');
+        new Priority(array('priority' => -12));
+    }
+
+    /**
+     * Unknown string priorities trigger an InvalidArgumentException as well
+     */
+    public function testConfigWithInvalidStringPriority()
+    {
+        $this->setExpectedException('\\InvalidArgumentException');
+        new Priority(array('priority' => 'turmoil'));
     }
 }

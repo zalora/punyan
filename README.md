@@ -41,10 +41,11 @@ Every logger can have zero or more filters and writers, every writer can have ze
 
 ### Available Filters
 
-* Priority
+* Callback
+* NoFilter
 * Namespace
-* Regexp
-*
+* Priority
+* Regular Expression
 
 #### Priority
 

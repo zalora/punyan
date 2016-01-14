@@ -1,6 +1,6 @@
 <?php
 /**
- * Logs input to file
+ * Logs input to a stream (Most common should be file)
  * @author Wolfram Huesken <wolfram.huesken@zalora.com>
  */
 
@@ -21,13 +21,13 @@ class Stream extends AbstractWriter
     /**
      * Open url/stream
      * @return void
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function init()
     {
         $stream = @fopen($this->config['url'], 'a');
         if (!$stream) {
-            throw new RuntimeException(sprintf("Couldn't open resource '%s'", $this->config['url']));
+            throw new \RuntimeException(sprintf("Couldn't open resource '%s'", $this->config['url']));
         }
         $this->stream = $stream;
     }
@@ -39,6 +39,14 @@ class Stream extends AbstractWriter
     public function __destruct()
     {
         @fclose($this->stream);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStream()
+    {
+        return $this->stream;
     }
 
     /**

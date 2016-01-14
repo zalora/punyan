@@ -40,6 +40,7 @@ abstract class AbstractFilter implements IFilter
      * @param array $config
      * @return \SplObjectStorage
      * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public static function buildFilters(array $config)
     {
@@ -47,7 +48,7 @@ abstract class AbstractFilter implements IFilter
 
         foreach ($config as $filter) {
             if (empty($filter) || !is_array($filter)) {
-                throw new \RuntimeException('Invalid configuration');
+                throw new \InvalidArgumentException('Invalid configuration');
             }
 
             $filterName = key($filter);

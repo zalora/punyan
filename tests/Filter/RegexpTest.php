@@ -33,9 +33,10 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Regexp::accept
+     * Invalid regular expressions throw a RuntimeException, they're checked during init()
      */
-    public function testInvalidRegexp() {
+    public function testInvalidRegexp()
+    {
         $this->setExpectedException('\\RuntimeException');
 
         $config = json_decode(sprintf($this->regexpConfigStub, '^Foo', '', 'false'), true);
@@ -43,9 +44,11 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Regexp::accept
+     * The default field is msg, custom fields can be configured via a parameter; the regular expressions
+     * in this test match
      */
-    public function testMatchingRegexp() {
+    public function testMatchingRegexp()
+    {
         $configDefaultField = json_decode(sprintf($this->regexpConfigStub, '/^Foo/', '', 'false'), true);
         $matchingRegexpFilterWithDefaultField = new Regexp($configDefaultField);
 
@@ -57,9 +60,10 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Regexp::accept
+     * Also test default and custom fields, only that the regular expressions don't match
      */
-    public function testNonMatchingRegexp() {
+    public function testNonMatchingRegexp()
+    {
         $configDefaultField = json_decode(sprintf($this->regexpConfigStub, '/^Bar/', '', 'false'), true);
         $nonMatchingRegexpFilterWithDefaultField = new Regexp($configDefaultField);
 
@@ -71,7 +75,7 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\Filter\Regexp::accept
+     * If the field to run the regular expression does not exist, you can configure what should be returned
      */
     public function testNonExistingFieldFlag()
     {

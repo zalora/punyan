@@ -31,25 +31,52 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\LogEvent::create
+     * Log events have to be created with an integer value log level, otherwise
+     * a RuntimeException is thrown
+     * @see Zalora\Punyan\ILogger
      */
-    public function testCreateWithInvalidLogLevel() {
+    public function testCreateWithInvalidLogLevel()
+    {
         $this->setExpectedException('\\InvalidArgumentException');
         LogEvent::create('Good morning', 'Hallo Test', array(), 'PHPUnit');
     }
 
     /**
-     * @covers Zalora\Punyan\LogEvent::create
+     * App name is mandatory, if a log event is created without an InvalidArgumentException is thrown
      */
-    public function testCreateWithEmptyAppname() {
+    public function testCreateWithEmptyAppname()
+    {
         $this->setExpectedException('\\InvalidArgumentException');
         LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array(), '');
     }
 
     /**
-     * @covers Zalora\Punyan\LogEvent::create
+     * Log events accept a predefined timestamp with microseconds
      */
-    public function testCreateWithoutExceptionWithoutPrevious() {
+    public function testCreatePredefinedTime()
+    {
+        $time = sprintf('%d.1234', time());
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array('time' => $time), 'PHPUnit');
+
+        $this->assertEquals('1234', substr($logEvent->getTime(), -5, -1));
+    }
+
+    /**
+     * If a predefined timestamp does not contain microseconds, it's filled up with zeros
+     */
+    public function testCreatePredefinedTimeWithoutMicroseconds()
+    {
+        $time = time();
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array('time' => $time), 'PHPUnit');
+
+        $this->assertEquals('0000', substr($logEvent->getTime(), -5, -1));
+    }
+
+    /**
+     * Log events also take an exception as message argument (here without previous exception)
+     */
+    public function testCreateWithExceptionWithoutPrevious()
+    {
         $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, $this->runtimeEx, array(), 'PHPUnit');
         $logEventData = $logEvent->getArrayCopy();
 
@@ -79,9 +106,10 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Zalora\Punyan\LogEvent::create
+     * Log events also take an exception as message argument (here with previous exception)
      */
-    public function testCreateWithExceptionWithPrevious() {
+    public function testCreateWithExceptionWithPrevious()
+    {
         $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, $this->invargEx, array(), 'PHPUnit');
         $logEventData = $logEvent->getArrayCopy();
 
@@ -122,5 +150,61 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->runtimeEx->getCode(), $previousArray['code']);
         $this->assertEquals($this->runtimeEx->getLine(), $previousArray['line']);
         $this->assertNotEmpty($previousArray['trace']);
+    }
+
+    /**
+     * Log events only support getters and setters, if you try to call other methods,
+     * a BadFunctionCallException is thrown. Methods shorter than 4 chars are invalid,
+     * because they can't be a valid getter or setter
+     */
+    public function testShortInvalidMethodCall()
+    {
+        $this->setExpectedException('\\BadFunctionCallException');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
+
+        $logEvent->get();
+    }
+
+    /**
+     * Methods longer than 3 chars have to start with 'get' or 'set' to be valid,
+     * otherwise a BadFunctionCallException is thrown
+     */
+    public function testLongInvalidMethodCall()
+    {
+        $this->setExpectedException('\\BadFunctionCallException');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
+
+        $logEvent->fooBar();
+    }
+
+    /**
+     * Getters and setters are implemented with the __call() function, setters of course
+     * have to set a value, if called without it throws an InvalidArgumentException
+     */
+    public function testEmptySetter()
+    {
+        $this->setExpectedException('\\InvalidArgumentException');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
+
+        $logEvent->setTime();
+    }
+
+    /**
+     * If you try to get a variable which does not exist, you get back null
+     */
+    public function testEmptyGetter()
+    {
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
+
+        $this->assertNull($logEvent->getADcUX3qKyFnITCF());
+        $this->assertNull($logEvent->getCLkJM6kFz8JvYEj());
+        $this->assertNull($logEvent->getWyGe3Hmx1PuNCkk());
+        $this->assertNull($logEvent->getETTnCLoCS6WQR3A());
+        $this->assertNull($logEvent->getDdTTNTWUniTh1ci());
+        $this->assertNull($logEvent->getWb044rUn13Z7Ry3());
+        $this->assertNull($logEvent->getQpVFftHPFtjAG3z());
+        $this->assertNull($logEvent->getA2ViCINc7Q4hBoP());
+        $this->assertNull($logEvent->getNw5tCJdwGdBj0jb());
+        $this->assertNull($logEvent->getIbH32Vin29OIDiX());
     }
 }

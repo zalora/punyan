@@ -83,6 +83,7 @@ class Ns extends AbstractFilter
     }
 
     /**
+     * Those coverage comments uglify the code quite a lot, but otherwise this area is "not executed"
      * @param LogEvent $event
      * @return bool
      */
@@ -104,6 +105,8 @@ class Ns extends AbstractFilter
                 return ($pos >= 0);
             case static::SEARCH_METHOD_REGEXP:
                 return (preg_match($this->expectedNamespace, $event['origin']['class']) > 0);
+    // @codeCoverageIgnoreStart
         }
     }
+    // @codeCoverageIgnoreStop
 }
