@@ -39,6 +39,10 @@ abstract class AbstractWriter implements IWriter
     public function __construct(array $config)
     {
         $this->config = $config;
+        if (!array_key_exists('mute', $config)) {
+            $this->config['mute'] = false;
+        }
+
         $this->formatter = new Bunyan();
         $this->filters = AbstractFilter::buildFilters($config['filters']);
 

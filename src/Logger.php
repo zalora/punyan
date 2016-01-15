@@ -44,9 +44,25 @@ class Logger implements ILogger
      */
     public function __construct($appName, array $options)
     {
+        if (empty($appName)) {
+            throw new \InvalidArgumentException('Your logger instance must have a name');
+        }
+
         $this->appName = $appName;
         $this->options = $options;
         $this->writers = new SplObjectStorage();
+
+        if (!array_key_exists('filters', $options)) {
+            throw new \InvalidArgumentException("Key 'filters' is mandatory");
+        }
+
+        if (!array_key_exists('writers', $options)) {
+            throw new \InvalidArgumentException("Key 'writers' is mandatory");
+        }
+
+        if (!array_key_exists('mute', $options)) {
+            $this->options['mute'] = false;
+        }
 
         $this->filters = AbstractFilter::buildFilters($this->options['filters']);
         $this->writers = $this->buildWriters($this->options['writers']);
@@ -63,6 +79,10 @@ class Logger implements ILogger
         // Check for mute and existing writers
         if (count($this->writers) === 0 || $this->options['mute'] === true) {
             return;
+        }
+
+        if (!is_numeric($level) || $level <= 0) {
+            throw new \InvalidArgumentException('Invalid log level, please choose one from interface ILogger');
         }
 
         // Add caller info to context (Also needed for ns filter to work)
@@ -99,6 +119,15 @@ class Logger implements ILogger
     }
 
     /**
+     * Return a clone to not accidentally modify stuffs
+     * @return SplObjectStorage
+     */
+    public function getWriters()
+    {
+        return clone $this->writers;
+    }
+
+    /**
      * @param IWriter $writer
      */
     public function removeWriter(IWriter $writer)
@@ -112,6 +141,15 @@ class Logger implements ILogger
     public function addFilter(IFilter $filter)
     {
         $this->filters->attach($filter);
+    }
+
+    /**
+     * Return a clone to not accidentally modify stuffs
+     * @return SplObjectStorage
+     */
+    public function getFilters()
+    {
+        return clone $this->filters;
     }
 
     /**
@@ -179,6 +217,7 @@ class Logger implements ILogger
     /**
      * @param array $config
      * @return SplObjectStorage
+     * @throws \RuntimeException
      */
     protected function buildWriters(array $config)
     {
@@ -189,6 +228,11 @@ class Logger implements ILogger
             $className = sprintf('Zalora\Punyan\Writer\%s',
                 ucfirst($writerName)
             );
+
+            if (!class_exists($className)) {
+                throw new \RuntimeException(sprintf("Writer '%s' does not exist", $className));
+            }
+
             $writers->attach(new $className(current($writer)));
         }
 
@@ -200,6 +244,10 @@ class Logger implements ILogger
      * @return array
      */
     public static function getLogOrigin(array $backtrace) {
+        if (count($backtrace) < 2) {
+            return array();
+        }
+
         // Safely kick the first item
         array_shift($backtrace);
 
@@ -207,7 +255,7 @@ class Logger implements ILogger
         foreach ($backtrace as $stackItem) {
             if (empty($stackItem['class'])) {
                 unset($stackItem['type']);
-                return $stackItem['class'];
+                return $stackItem;
             }
 
             if (strpos(ltrim($stackItem['class'], '\\'), __NAMESPACE__) === 0) {
@@ -216,12 +264,12 @@ class Logger implements ILogger
             }
 
             unset($stackItem['type']);
-            $stackItem['file'] = $previousItem['file'];
-            $stackItem['line'] = $previousItem['line'];
+            $stackItem['file'] = isset($previousItem['file']) ? $previousItem['file'] : null;
+            $stackItem['line'] = isset($previousItem['line']) ? $previousItem['line'] : null;
 
-            return $stackItem;
+            break;
         }
 
-        return array();
+        return $stackItem;
     }
 }
