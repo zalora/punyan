@@ -8,7 +8,9 @@ namespace Zalora\Punyan;
 use Zalora\Punyan\Filter\DiscoBouncer;
 use Zalora\Punyan\Filter\NoFilter;
 use Zalora\Punyan\Formatter\Bunyan;
+use Zalora\Punyan\Writer\IWriter;
 use Zalora\Punyan\Writer\NoWriter;
+use Zalora\Punyan\Writer\Stream;
 
 /**
  * @package Zalora\Punyan
@@ -352,7 +354,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
         $logger->log(50, 'Hallo');
 
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         fseek($stream, 0);
 
         $this->assertEmpty(stream_get_contents($stream));
@@ -406,7 +408,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -436,7 +438,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_TRACE, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -460,7 +462,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_DEBUG, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -484,7 +486,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -508,7 +510,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -532,7 +534,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -556,7 +558,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMemoryLogger();
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -586,5 +588,16 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
                 ))
             )
         ));
+    }
+
+    /**
+     * PHP 7 needs to rewind the SPLObjectStorage before you can extract items with current...
+     * @param Logger $logger
+     * @return Stream
+     */
+    private function getCurrentStreamFromLogger(Logger $logger) {
+        $writers = $logger->getWriters();
+        $writers->rewind();
+        return $writers->current()->getStream();
     }
 }

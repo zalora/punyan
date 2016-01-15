@@ -22,7 +22,7 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
         ZLog::setInstance($logger);
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_TRACE, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -57,7 +57,7 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
         ZLog::setInstance($logger);
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_DEBUG, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -92,7 +92,7 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
         ZLog::setInstance($logger);
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -127,7 +127,7 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
         ZLog::setInstance($logger);
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -162,7 +162,7 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
         ZLog::setInstance($logger);
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -197,7 +197,7 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
         ZLog::setInstance($logger);
 
         $time = time();
-        $stream = $logger->getWriters()->current()->getStream();
+        $stream = $this->getCurrentStreamFromLogger($logger);
         $formatter = new Bunyan();
 
         $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, 'PHPUnit', array('time' => $time), 'PHPUnit');
@@ -236,5 +236,16 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
                 ))
             )
         ));
+    }
+
+    /**
+     * PHP 7 needs to rewind the SPLObjectStorage before you can extract items with current...
+     * @param Logger $logger
+     * @return Stream
+     */
+    private function getCurrentStreamFromLogger(Logger $logger) {
+        $writers = $logger->getWriters();
+        $writers->rewind();
+        return $writers->current()->getStream();
     }
 }
