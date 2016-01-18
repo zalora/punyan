@@ -19,6 +19,11 @@ class Stream extends AbstractWriter
     protected $stream;
 
     /**
+     * @var bool
+     */
+    protected $useLocks = false;
+
+    /**
      * Open url/stream
      * @return void
      * @throws \RuntimeException
@@ -29,7 +34,12 @@ class Stream extends AbstractWriter
         if (!$stream) {
             throw new \RuntimeException(sprintf("Couldn't open resource '%s'", $this->config['url']));
         }
+
         $this->stream = $stream;
+
+        if (!empty($this->config['lock']) && $this->config['lock'] === true && stream_supports_lock($this->stream)) {
+            $this->useLocks = true;
+        }
     }
 
     /**
@@ -56,6 +66,14 @@ class Stream extends AbstractWriter
     protected function _write(LogEvent $logEvent)
     {
         $line = $this->formatter->format($logEvent);
+        if ($this->useLocks === true) {
+            flock($this->stream, LOCK_EX);
+        }
+
         fwrite($this->stream, $line);
+
+        if ($this->useLocks === true) {
+            flock($this->stream, LOCK_UN);
+        }
     }
 }
