@@ -1,4 +1,4 @@
-### 0.1.1
+### 0.1.1 (2016-01-21)
 
 * Added CHANGELOG ;-)
 * Added locking for stream writer
