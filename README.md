@@ -7,6 +7,7 @@ Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trent
 * Linux / OS X (Maybe someone with Windows wants to try?)
 * PHP 5.3+
 * Composer
+* NPM
 
 ## Installation
 
@@ -136,10 +137,10 @@ Example:
 
 #### Namespace (Ns)
 
-This filter is applied on your classname (including the namespace), so you can e.g. use it to assign 
-your modules a separate logfile. Regular Expressions are validated during init of the logger. 
+This filter is applied on your class name (including the namespace), so you can e.g. use it to assign 
+your modules a separate logfile. Regular Expressions are validated during init of the logger.
 
-Options: 
+Options:
 
 * namespace: What to search for in the namespace
 * searchMethod: (optional, default 'startsWith') One of those: (startsWith|contains|regexp)
@@ -186,7 +187,27 @@ Match all URLs which start with https, in case there are no URLs logged, discard
 
 ### Writers
 
-Currently there's only one writer (StreamWriter), in a later version I'll add a few more to support FirePHP and Slack
+Currently there's only one writer (StreamWriter), in a later version I'll add a few more to support FirePHP and Slack. 
+The two options every writer has are: 
+
+* mute (true|false) default is false
+* origin (true|false) default is true
+ 
+#### Mute
+
+This will (Cpt. Obvious) mute the writer and suppress any potential output
+
+#### Origin
+
+Origin adds an array with information about where the log call was triggered, it contains the following fields: 
+
+* file
+* line
+* class
+* function
+
+This is e.g. required for the Namespace filter. If you set origin to false and add a Ns-Filter, the filter will always
+return false.
 
 #### StreamWriter
 

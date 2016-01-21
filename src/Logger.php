@@ -85,12 +85,6 @@ class Logger implements ILogger
             throw new \InvalidArgumentException('Invalid log level, please choose one from interface ILogger');
         }
 
-        // Add caller info to context (Also needed for ns filter to work)
-        $origin = static::getLogOrigin(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
-        if (!empty($origin)) {
-            $context['origin'] = $origin;
-        }
-
         $logEvent = LogEvent::create($level, $msg, $context, $this->appName);
 
         // Check global filters

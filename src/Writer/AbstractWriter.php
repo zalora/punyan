@@ -6,6 +6,7 @@
 
 namespace Zalora\Punyan\Writer;
 
+use Zalora\Punyan\Logger;
 use Zalora\Punyan\LogEvent;
 use Zalora\Punyan\Filter\IFilter;
 use Zalora\Punyan\Formatter\Bunyan;
@@ -63,6 +64,10 @@ abstract class AbstractWriter implements IWriter
         // Check writer filters
         $accept = true;
 
+        if (!array_key_exists('origin', $this->config) || $this->config['origin'] === true) {
+            $this->addOrigin($logEvent);
+        }
+
         /* @var $filter IFilter */
         foreach ($this->filters as $filter) {
             if (!($filter->accept($logEvent) && $accept)) {
@@ -71,6 +76,16 @@ abstract class AbstractWriter implements IWriter
         }
 
         $this->_write($logEvent);
+    }
+
+    /**
+     * @param LogEvent $logEvent
+     */
+    protected function addOrigin(LogEvent $logEvent) {
+        $origin = Logger::getLogOrigin(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
+        if (!empty($origin)) {
+            $logEvent['origin'] = $origin;
+        }
     }
 
     /**

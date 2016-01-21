@@ -111,7 +111,7 @@ class NsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * If no origin is provided, the filter returns false
+     * If no origin is provided, the filter returns false, this can e.g. happen if someone sets origin to false
      */
     public function testEmptyOrigin()
     {
