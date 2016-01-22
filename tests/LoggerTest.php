@@ -575,6 +575,49 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Two writers where the first doesn't bubble, so the second one should stay dry
+     */
+    public function testBubbling()
+    {
+        $config = array(
+            'filters' => array(),
+            'writers' => array(
+                array(
+                    'Stream' => array(
+                        'bubble' => false,
+                        'url' => 'php://memory',
+                        'filters' => array()
+                    )
+                ),
+                array(
+                    'Stream' => array(
+                        'url' => 'php://memory',
+                        'filters' => array()
+                    )
+                )
+            )
+        );
+
+        $logger = new Logger('PHPUnit', $config);
+        $logger->info('Hello');
+
+        $writers = $logger->getWriters();
+        $this->assertCount(2, $writers);
+
+        $content = array();
+        foreach ($writers as $writer) {
+            $content[] = stream_get_contents($writer->getStream(), -1, 0);
+        }
+
+        $this->assertNotEmpty($content[0]);
+        $this->assertEmpty($content[1]);
+
+        $logMessage = json_decode($content[0], true);
+
+        $this->assertEquals('Hello', $logMessage['msg']);
+    }
+
+    /**
      * @return Logger
      */
     private function getMemoryLogger()
