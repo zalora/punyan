@@ -61,7 +61,7 @@ class Stream extends AbstractWriter
 
     /**
      * @param LogEvent $logEvent
-     * @return void
+     * @return bool
      */
     protected function _write(LogEvent $logEvent)
     {
@@ -75,5 +75,7 @@ class Stream extends AbstractWriter
         if ($this->useLocks === true) {
             flock($this->stream, LOCK_UN);
         }
+
+        return $this->bubble;
     }
 }

@@ -34,12 +34,18 @@ abstract class AbstractWriter implements IWriter
     protected $formatter;
 
     /**
+     * @var bool
+     */
+    protected $bubble;
+
+    /**
      * Store configuration
      * @param array $config
      */
     public function __construct(array $config)
     {
         $this->config = $config;
+
         if (!array_key_exists('mute', $config)) {
             $this->config['mute'] = false;
         }
@@ -47,12 +53,16 @@ abstract class AbstractWriter implements IWriter
         $this->formatter = new Bunyan();
         $this->filters = AbstractFilter::buildFilters($config['filters']);
 
+        if (array_key_exists('bubble', $this->config) && $this->config['bubble'] === false) {
+            $this->bubble = false;
+        }
+
         $this->init();
     }
 
     /**
      * @param LogEvent $logEvent
-     * @return void
+     * @return bool
      */
     public function log(LogEvent $logEvent)
     {
@@ -75,7 +85,13 @@ abstract class AbstractWriter implements IWriter
             }
         }
 
-        $this->_write($logEvent);
+        // Only return false if the writer really wants to stop propagating
+        $bubble = $this->_write($logEvent);
+        if ($bubble === false) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -90,7 +106,7 @@ abstract class AbstractWriter implements IWriter
 
     /**
      * @param LogEvent $logEvent
-     * @return void
+     * @return bool
      */
     protected abstract function _write(LogEvent $logEvent);
 }

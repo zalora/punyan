@@ -23,9 +23,10 @@ class NoWriter extends AbstractWriter
 
     /**
      * @param LogEvent $logEvent
-     * @return void
+     * @return bool
      */
     protected function _write(LogEvent $logEvent)
     {
+        return $this->bubble;
     }
 }

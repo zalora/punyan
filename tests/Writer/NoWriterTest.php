@@ -8,7 +8,6 @@
 
 namespace Zalora\Punyan\Writer;
 
-use Zalora\Punyan\Formatter\Bunyan;
 use Zalora\Punyan\ILogger;
 use Zalora\Punyan\LogEvent;
 
@@ -28,6 +27,46 @@ class NoWriterTest extends \PHPUnit_Framework_TestCase
         ));
 
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN,'Hallo', array(), 'PHPUnit');
-        $writer->log($logEvent);
+        $this->assertTrue($writer->log($logEvent));
+    }
+
+    /**
+     * If bubbling is set to false, _write() must return false, otherwise true
+     */
+    public function testBubbling() {
+        $configNoBubbling = array(
+            'bubble' => false,
+            'url' => 'php://memory',
+            'filters' => array()
+        );
+
+        $configWithBubbling = array(
+            'bubble' => true,
+            'url' => 'php://memory',
+            'filters' => array()
+        );
+
+        $configWithBubblingByDefault = array(
+            'url' => 'php://memory',
+            'filters' => array()
+        );
+
+        $configWithFaultyBubbleSetting = array(
+            'bubble' => 'yeeha!',
+            'url' => 'php://memory',
+            'filters' => array()
+        );
+
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Bubble Bobble', array(), 'PHPUnit');
+
+        $noBubbleWriter = new NoWriter($configNoBubbling);
+        $configuredBubbleWriter = new NoWriter($configWithBubbling);
+        $defaultBubbleWriter = new NoWriter($configWithBubblingByDefault);
+        $wrongConfiguredBubbleWriter = new NoWriter($configWithFaultyBubbleSetting);
+
+        $this->assertFalse($noBubbleWriter->log($logEvent));
+        $this->assertTrue($configuredBubbleWriter->log($logEvent));
+        $this->assertTrue($defaultBubbleWriter->log($logEvent));
+        $this->assertTrue($wrongConfiguredBubbleWriter->log($logEvent));
     }
 }

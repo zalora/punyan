@@ -57,7 +57,7 @@ ZLog::info('Informative log message', array('param1' => 'stuffs'));
 
 ```bash
 $ sudo npm install -g bunyan
-$ tail -f /tmp/myproject.log | bunyan
+$ tail -f /tmp/myproject.log | bunyan -o short -L
 ```
 
 Bunyan is actually one of the few npm modules which installed without a single warning or error!
@@ -188,11 +188,12 @@ Match all URLs which start with https, in case there are no URLs logged, discard
 ### Writers
 
 Currently there's only one writer (StreamWriter), in a later version I'll add a few more to support FirePHP and Slack. 
-The two options every writer has are: 
+The three options every writer has are: 
 
 * mute (true|false) default is false
 * origin (true|false) default is true
- 
+* bubble (true|false) default is true
+
 #### Mute
 
 This will (Cpt. Obvious) mute the writer and suppress any potential output
@@ -208,6 +209,43 @@ Origin adds an array with information about where the log call was triggered, it
 
 This is e.g. required for the Namespace filter. If you set origin to false and add a Ns-Filter, the filter will always
 return false.
+
+#### Bubble
+
+Once a writer logged the message, the log event is not sent to other writers. Example: 
+```json
+{
+  "filters": [
+    { "priority": { "priority": "info" } }
+  ],
+  "writers": [
+    {
+      "Stream": {
+        "origin": true,
+        "bubble": false,
+        "url": "services.log",
+        "filters": [
+          { "ns": { "namespace": "Service", "searchMethod": "contains" } }
+        ]
+      }
+    },
+    {
+      "Stream": {
+        "origin": true,
+        "url": "common.log",
+        "filters": []
+      }
+    }
+  ]
+}
+```
+
+The services.log keeps all log events which come from classes which contain the word Service in their class name. 
+Without bubbling the log message would be in both files, as the stream writer for common.log doesn't have any filters.
+So bubbling can be used to prevent duplicate log messages. Keep in mind that the order in which you define your 
+writers is important when you use bubbling!
+
+Disclaimer: I stole the word "bubbling" from [Monolog](https://github.com/Seldaek/monolog)
 
 #### StreamWriter
 
@@ -234,9 +272,13 @@ The stream will be opened during the init process, so in case of files you know 
 
 ### Why reinvent the wheel?
 
-Actually I couldn't find a logger I liked, which does NOT implement the [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) interface.
+Actually I couldn't find a logger I liked, which does NOT implement the 
+[PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) interface.
+At first I thought implementing a Formatter for [Monolog](https://github.com/Seldaek/monolog) should do the trick, but
+the log levels wouldn't match properly and using a mapping seemed too hackish. 
 
-As we want to use the tooling the bunyan project provides, we have to stay format-compatible. And here we have yet another logger for PHP.
+As we want to use the tooling the bunyan project provides, we have to stay format-compatible. And here we have yet 
+another logger for PHP.
 
 ### What's planned?
 

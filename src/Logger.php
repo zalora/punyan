@@ -100,7 +100,10 @@ class Logger implements ILogger
         // Send log event to Writers (Threads would be cool here...)
         /* @var $writer IWriter */
         foreach ($this->writers as $writer) {
-            $writer->log($logEvent);
+            $bubble = $writer->log($logEvent);
+            if ($bubble === false) {
+                break;
+            }
         }
     }
 
