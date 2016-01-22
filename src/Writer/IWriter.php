@@ -14,7 +14,6 @@ use Zalora\Punyan\LogEvent;
  */
 interface IWriter extends ILogger
 {
-
     /**
      * Prepare for action
      * @return void
@@ -26,5 +25,4 @@ interface IWriter extends ILogger
      * @return bool
      */
     public function log(LogEvent $logEvent);
-
 }
