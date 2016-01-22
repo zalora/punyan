@@ -1,4 +1,4 @@
-# Punyan [![Build Status](https://travis-ci.org/zalora/punyan.svg?branch=master)](https://travis-ci.com/zalora/punyan)
+# Punyan [![Build Status](https://travis-ci.org/zalora/punyan.svg?branch=master)](https://travis-ci.org/zalora/punyan)
 
 Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally
 written for node.js
