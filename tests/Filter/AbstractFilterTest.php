@@ -63,4 +63,33 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Zalora\Punyan\Filter\NoFilter', $filter);
         }
     }
+
+    /**
+     * Include pseudo external filter
+     */
+    public function testBuildFilterWithFullClassName() {
+        $config = array(
+            array('Zalora\Punyan\Filter\NoFilter' => array())
+        );
+
+        $filters = AbstractFilter::buildFilters($config);
+
+        $this->assertInstanceOf('\\SplObjectStorage', $filters);
+        $this->assertCount(1, $filters);
+
+        $filters->rewind();
+        $this->assertInstanceOf('Zalora\Punyan\Filter\NoFilter', $filters->current());
+    }
+
+    /**
+     * Include pseudo external filter
+     */
+    public function testBuildFiltersWithFilterNotImplementingIFilter() {
+        $this->setExpectedException('\RuntimeException');
+        $config = array(
+            array('\stdClass' => array())
+        );
+
+        AbstractFilter::buildFilters($config);
+    }
 }

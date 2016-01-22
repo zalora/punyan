@@ -5,12 +5,11 @@
  */
 
 namespace Zalora\Punyan;
-use Zalora\Punyan\Filter\DiscoBouncer;
+
 use Zalora\Punyan\Filter\NoFilter;
-use Zalora\Punyan\Formatter\Bunyan;
-use Zalora\Punyan\Writer\IWriter;
 use Zalora\Punyan\Writer\NoWriter;
-use Zalora\Punyan\Writer\Stream;
+use Zalora\Punyan\Formatter\Bunyan;
+use Zalora\Punyan\Filter\DiscoBouncer;
 
 /**
  * @package Zalora\Punyan
@@ -246,6 +245,43 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->assertCount(1, $logger->getWriters());
+    }
+
+    /**
+     * Before writers were hard-wired to have the Zalora\Punyan\Writer namespace, now everyone who
+     * implements IWriter can use his own writers
+     */
+    public function testCreateWriterWithFullClassName() {
+        $logger = new Logger('PHPUnit', array(
+            'filters' => array(),
+            'writers' => array(
+                array('Zalora\Punyan\Writer\NoWriter' => array(
+                    'filters' => array()
+                ))
+            )
+        ));
+
+        $writers = $logger->getWriters();
+        $this->assertCount(1, $writers);
+
+        $writers->rewind();
+        $this->assertInstanceOf('Zalora\Punyan\Writer\NoWriter', $writers->current());
+    }
+
+    /**
+     * Only classes which implement IWriter can be added to the logger as writers
+     */
+    public function testCreateLoggerWhereWriterDoesNotImplementIWriter() {
+        $this->setExpectedException('\RuntimeException');
+
+        new Logger('PHPUnit', array(
+            'filters' => array(),
+            'writers' => array(
+                array('\stdClass' => array(
+                    'filters' => array()
+                ))
+            )
+        ));
     }
 
     /**
@@ -636,7 +672,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     /**
      * PHP 7 needs to rewind the SPLObjectStorage before you can extract items with current...
      * @param Logger $logger
-     * @return Stream
+     * @return resource
      */
     private function getCurrentStreamFromLogger(Logger $logger) {
         $writers = $logger->getWriters();

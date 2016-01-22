@@ -1,6 +1,7 @@
 # Punyan [![Build Status](https://travis-ci.com/zalora/punyan.svg?token=xVdK7vmHNmWkzySFLTpU&branch=master)](https://travis-ci.com/zalora/punyan)
 
-Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally written for node.js
+Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally
+written for node.js
 
 ## Requirements
 
@@ -113,7 +114,8 @@ The only option is:
 
 * function: You better make sure it's callable
 
-If you don't return anything, false is assumed. It's of course also your responsibility to make sure the class is loaded or an autoloader is present to do that.
+If you don't return anything, false is assumed. It's of course also your responsibility to make sure the class is
+loaded or an autoloader is present to do that.
 
 Example:
 
@@ -121,7 +123,8 @@ Example:
 
 #### DiscoBouncer
 
-The name says it all: It will filter everything. This filter doesn't have options and is currently used for unit tests. If you find a real world use case, let me know. I'm curious.
+The name says it all: It will filter everything. This filter doesn't have options and is currently used for unit tests.
+If you find a real world use case, let me know. I'm curious.
 
 Example:
 
@@ -265,8 +268,8 @@ The stream will be opened during the init process, so in case of files you know 
 
 ## Known Problems
 
-* It's impossible to include external writers or filters, because the namespace is hard wired. This will change in a future version
-* The only supported format is Bunyan; this is not really a problem, more a design decision. I might loosen that to be able to support other JSON based services
+* The only supported format is Bunyan; this is not really a problem, more a design decision. I might loosen that to be
+able to support other JSON based services if someone's interested...
 
 ## FAQs
 
@@ -290,12 +293,15 @@ I think an example should explain it best: For a certain module you want to log 
 * HTTP method
 * the POST array
 
-Of course you can do that manually, but it's a lot of work and it clutters the code, because it will be executed even if the log message itself is filtered out. So you move this code into a "content enricher" and attach it to a writer. From that moment on it will gather all the required information automatically
+Of course you can do that manually, but it's a lot of work and it clutters the code, because it will be executed even
+if the log message itself is filtered out. So you move this code into a "content enricher" and attach it to a writer.
+From that moment on it will gather all the required information automatically
 
-#### Log Interruption
-
-I want to add an option to stop propagating to other writers
+I guess I just steal another word from the Monolog guys, they call it processors... I'm not really happy with the name
+as it is too common, but I can't come up with a better one.
 
 #### Configuration storage
 
-In order to change log levels you have to change a file or even worse change code. I want to provide a small CLI program which changes the configuration without a need for writeable files or redeploy. This can be achieved by storing the configuration in a key value store
+In order to change log levels you have to change a file or even worse change code. I want to provide a small CLI
+program which changes the configuration without a need for writeable files or redeploy. This can be achieved by
+storing the configuration in a key value store

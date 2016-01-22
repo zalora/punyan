@@ -222,15 +222,25 @@ class Logger implements ILogger
 
         foreach ($config as $writer) {
             $writerName = key($writer);
-            $className = sprintf('Zalora\Punyan\Writer\%s',
-                ucfirst($writerName)
-            );
 
-            if (!class_exists($className)) {
-                throw new \RuntimeException(sprintf("Writer '%s' does not exist", $className));
+            if (!class_exists($writerName)) {
+                $className = sprintf('Zalora\Punyan\Writer\%s',
+                    ucfirst($writerName)
+                );
+
+                if (!class_exists($className)) {
+                    throw new \RuntimeException(sprintf("Writer '%s' does not exist", $className));
+                }
+
+                $writer = new $className(current($writer));
+            } else {
+                $writer = new $writerName(current($writer));
             }
 
-            $writers->attach(new $className(current($writer)));
+            if (!($writer instanceof IWriter)) {
+                throw new \RuntimeException(sprintf("Writer '%s' does not implement IWriter", $writerName));
+            }
+            $writers->attach($writer);
         }
 
         return $writers;
@@ -249,6 +259,8 @@ class Logger implements ILogger
         array_shift($backtrace);
 
         $previousItem = null;
+        $stackItem = array();
+
         foreach ($backtrace as $stackItem) {
             if (empty($stackItem['class'])) {
                 unset($stackItem['type']);

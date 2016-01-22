@@ -52,15 +52,24 @@ abstract class AbstractFilter implements IFilter
             }
 
             $filterName = key($filter);
-            $className = sprintf(static::FILTER_NAMESPACE_STUB,
-                ucfirst($filterName)
-            );
+            if (!class_exists($filterName)) {
+                $className = sprintf(static::FILTER_NAMESPACE_STUB,
+                    ucfirst($filterName)
+                );
 
-            if (!class_exists($className)) {
-                throw new \RuntimeException(sprintf("Class '%s' not found...", $className));
+                if (!class_exists($className)) {
+                    throw new \RuntimeException(sprintf("Class '%s' not found...", $filterName));
+                }
+
+                $filter = new $className(current($filter));
+            } else {
+                $filter = new $filterName(current($filter));
             }
 
-            $filters->attach(new $className(current($filter)));
+            if (!($filter instanceof IFilter)) {
+                throw new \RuntimeException(sprintf("Filter '%s' does not implement IFilter", $filterName));
+            }
+            $filters->attach($filter);
         }
 
         return $filters;
