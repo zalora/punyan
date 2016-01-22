@@ -23,7 +23,7 @@ interface IWriter extends ILogger
 
     /**
      * @param LogEvent $logEvent
-     * @return void
+     * @return bool
      */
     public function log(LogEvent $logEvent);
 
