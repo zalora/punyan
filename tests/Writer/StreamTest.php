@@ -45,7 +45,8 @@ class StreamTest extends \PHPUnit_Framework_TestCase
      * I don't really have to unit test it. I pretty much stole a demo wrapper from the PHP documentation
      * and made lie that it supports locking...
      */
-    public function testLogWithLock() {
+    public function testLogWithLock()
+    {
         stream_wrapper_register("globalz", "Zalora\\Punyan\\StreamWrapper\\VariableStream");
 
         $config = array(
@@ -85,7 +86,8 @@ class StreamTest extends \PHPUnit_Framework_TestCase
     /**
      * If bubbling is set to false, _write() must return false, otherwise true
      */
-    public function testBubbling() {
+    public function testBubbling()
+    {
         $configNoBubbling = array(
             'bubble' => false,
             'url' => 'php://memory',

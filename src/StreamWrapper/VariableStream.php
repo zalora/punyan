@@ -143,14 +143,16 @@ class VariableStream {
      * @param $operation
      * @return bool
      */
-    public function stream_lock($operation) {
+    public function stream_lock($operation)
+    {
         return true;
     }
 
     /**
      * @return array
      */
-    public function stream_stat() {
+    public function stream_stat()
+    {
         return array();
     }
 }

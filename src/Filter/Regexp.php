@@ -92,7 +92,8 @@ class Regexp extends AbstractFilter
      * @param LogEvent $event
      * @return string
      */
-    protected function getFieldValue(LogEvent $event) {
+    protected function getFieldValue(LogEvent $event)
+    {
         $fields = explode('.', $this->field);
         $value = $event->getArrayCopy();
 

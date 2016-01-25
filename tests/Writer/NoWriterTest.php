@@ -33,7 +33,8 @@ class NoWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * If bubbling is set to false, _write() must return false, otherwise true
      */
-    public function testBubbling() {
+    public function testBubbling()
+    {
         $configNoBubbling = array(
             'bubble' => false,
             'url' => 'php://memory',

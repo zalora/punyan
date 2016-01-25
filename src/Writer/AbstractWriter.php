@@ -12,6 +12,7 @@ use Zalora\Punyan\Filter\IFilter;
 use Zalora\Punyan\Formatter\Bunyan;
 use Zalora\Punyan\Formatter\IFormatter;
 use Zalora\Punyan\Filter\AbstractFilter;
+use Zalora\Punyan\Processor\IProcessor;
 
 /**
  * @package Zalora\Punyan\Writer
@@ -34,6 +35,11 @@ abstract class AbstractWriter implements IWriter
     protected $formatter;
 
     /**
+     * @var \SplObjectStorage
+     */
+    protected $processors;
+
+    /**
      * @var bool
      */
     protected $bubble;
@@ -52,6 +58,13 @@ abstract class AbstractWriter implements IWriter
 
         $this->formatter = new Bunyan();
         $this->filters = AbstractFilter::buildFilters($config['filters']);
+
+        // If there are no processors, just create an empty object storage
+        if (!empty($this->config['processors']) && is_array($this->config['processors'])) {
+            $this->processors = $this->buildProcessors($this->config['processors']);
+        } else {
+            $this->processors = new \SplObjectStorage();
+        }
 
         if (array_key_exists('bubble', $this->config) && $this->config['bubble'] === false) {
             $this->bubble = false;
@@ -85,6 +98,11 @@ abstract class AbstractWriter implements IWriter
             }
         }
 
+        /* @var $processor IProcessor */
+        foreach ($this->processors as $processor) {
+            $processor->process($logEvent);
+        }
+
         // Only return false if the writer really wants to stop propagating
         $bubble = $this->_write($logEvent);
         if ($bubble === false) {
@@ -95,6 +113,48 @@ abstract class AbstractWriter implements IWriter
     }
 
     /**
+     * @param IProcessor $processor
+     */
+    public function addProcessor(IProcessor $processor) {
+        $this->processors->attach($processor);
+    }
+
+    /**
+     * @param IProcessor $processor
+     */
+    public function removeProcessor(IProcessor $processor) {
+        $this->processors->detach($processor);
+    }
+
+    /**
+     * @return \SplObjectStorage
+     */
+    public function getProcessors() {
+        return clone $this->processors;
+    }
+
+    /**
+     * @param IFilter $filter
+     */
+    public function addFilter(IFilter $filter) {
+        $this->filters->attach($filter);
+    }
+
+    /**
+     * @param IFilter $filter
+     */
+    public function removeFilter(IFilter $filter) {
+        $this->filters->detach($filter);
+    }
+
+    /**
+     * @return \SplObjectStorage
+     */
+    public function getFilters() {
+        return clone $this->filters;
+    }
+
+    /**
      * @param LogEvent $logEvent
      */
     protected function addOrigin(LogEvent $logEvent) {
@@ -102,6 +162,35 @@ abstract class AbstractWriter implements IWriter
         if (!empty($origin)) {
             $logEvent['origin'] = $origin;
         }
+    }
+
+    /**
+     * @param array $processors
+     * @return \SplObjectStorage
+     * @throws \RuntimeException
+     */
+    protected function buildProcessors(array $processors) {
+        $processorStorage = new \SplObjectStorage();
+
+        foreach ($processors as $proc) {
+            if (!class_exists($proc)) {
+                $className = sprintf('%s\\%s', IProcessor::PROCESSOR_NAMESPACE, $proc);
+                if (!class_exists($className)) {
+                    throw new \RuntimeException(sprintf("Class '%s' not found...", $proc));
+                }
+                $processor = new $className();
+            } else {
+                $processor = new $proc();
+            }
+
+            if (!($processor instanceof IProcessor)) {
+                throw new \RuntimeException(sprintf("Processor '%s' does not implement IProcessor", $proc));
+            }
+
+            $processorStorage->attach($processor);
+        }
+
+        return $processorStorage;
     }
 
     /**

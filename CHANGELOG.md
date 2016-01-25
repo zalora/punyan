@@ -1,3 +1,7 @@
+### 0.1.3 (2016-01-25)
+
+* Added processors
+
 ### 0.1.2 (2016-01-22)
 
 * Added bubbling support (Once a writer logged the message, the log event is not sent to other writers)

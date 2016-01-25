@@ -251,7 +251,8 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      * Before writers were hard-wired to have the Zalora\Punyan\Writer namespace, now everyone who
      * implements IWriter can use his own writers
      */
-    public function testCreateWriterWithFullClassName() {
+    public function testCreateWriterWithFullClassName()
+    {
         $logger = new Logger('PHPUnit', array(
             'filters' => array(),
             'writers' => array(
@@ -271,7 +272,8 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     /**
      * Only classes which implement IWriter can be added to the logger as writers
      */
-    public function testCreateLoggerWhereWriterDoesNotImplementIWriter() {
+    public function testCreateLoggerWhereWriterDoesNotImplementIWriter()
+    {
         $this->setExpectedException('\RuntimeException');
 
         new Logger('PHPUnit', array(
@@ -674,7 +676,8 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      * @param Logger $logger
      * @return resource
      */
-    private function getCurrentStreamFromLogger(Logger $logger) {
+    private function getCurrentStreamFromLogger(Logger $logger)
+    {
         $writers = $logger->getWriters();
         $writers->rewind();
         return $writers->current()->getStream();

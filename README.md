@@ -266,6 +266,27 @@ Options:
 
 The stream will be opened during the init process, so in case of files you know very early if it's writeable or not
 
+### Processors
+
+I stole the name again from Monolog, because I couldn't come up with a better one... They're also doing the same: Add 
+additional to every log event. 
+
+Of course you can do that manually, but it's a lot of work and it clutters the code, because it will be executed even
+if the log message itself is filtered out. So you move this code into a Processor and attach it to a writer.
+From that moment on it will gather all the required information automatically.
+
+The additional data is stored under the key 'proc', which is defined in `Zalora\Punyan\IProcessor`.
+
+### Web Processor
+
+The following data is added to the proc array of every log event:
+
+* url: `$_SERVER['REQUEST_URI']`
+* ip: `$_SERVER['REMOTE_ADDR']`
+* http_method: `$_SERVER['REQUEST_METHOD']`
+* server: `$_SERVER['SERVER_NAME']`
+* referrer: `$_SERVER['HTTP_REFERER]`
+
 ## Known Problems
 
 * The only supported format is Bunyan; this is not really a problem, more a design decision. I might loosen that to be
@@ -284,21 +305,6 @@ As we want to use the tooling the bunyan project provides, we have to stay forma
 another logger for PHP.
 
 ### What's planned?
-
-#### Automatic Content Enrichment (I still need a proper name for that)
-
-I think an example should explain it best: For a certain module you want to log every HTTP related variables, e.g. 
-
-* URL 
-* HTTP method
-* the POST array
-
-Of course you can do that manually, but it's a lot of work and it clutters the code, because it will be executed even
-if the log message itself is filtered out. So you move this code into a "content enricher" and attach it to a writer.
-From that moment on it will gather all the required information automatically
-
-I guess I just steal another word from the Monolog guys, they call it processors... I'm not really happy with the name
-as it is too common, but I can't come up with a better one.
 
 #### Configuration storage
 

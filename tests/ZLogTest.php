@@ -226,7 +226,8 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Logger
      */
-    private function getMemoryLogger() {
+    private function getMemoryLogger()
+    {
         return new Logger('PHPUnit', array(
             'filters' => array(),
             'writers' => array(
@@ -243,7 +244,8 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
      * @param Logger $logger
      * @return Stream
      */
-    private function getCurrentStreamFromLogger(Logger $logger) {
+    private function getCurrentStreamFromLogger(Logger $logger)
+    {
         $writers = $logger->getWriters();
         $writers->rewind();
         return $writers->current()->getStream();
