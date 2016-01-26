@@ -3,6 +3,7 @@
 * Added Code Climate
 * Huge round of refactorings (Worked on all complaints of PHPMD)
 * Made the configuration less pharisaic
+* Added more badges to show off
 
 ### 0.1.3 (2016-01-25)
 
