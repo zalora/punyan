@@ -18,7 +18,6 @@ written for node.js
 
 ```json
 {
-  "filters": [],
   "writers": [
     {
       "stream": {
@@ -32,7 +31,6 @@ written for node.js
 
 ```php
 $config = array(
-    'filters' => array(),
     'writers' => array(
         array('stream' => array(
             'url' => '/tmp/myproject.log',

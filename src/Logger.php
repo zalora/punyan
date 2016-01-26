@@ -15,7 +15,7 @@ use Zalora\Punyan\Filter\AbstractFilter;
 /**
  * @package Zalora\Punyan
  */
-class Logger implements ILogger
+class Logger extends AbstractLogger
 {
     /**
      * @var string
@@ -52,15 +52,15 @@ class Logger implements ILogger
         $this->options = $options;
         $this->writers = new SplObjectStorage();
 
-        if (!array_key_exists('filters', $options)) {
-            throw new \InvalidArgumentException("Key 'filters' is mandatory");
+        if (!array_key_exists('filters', $this->options)) {
+            $this->options['filters'] = array();
         }
 
-        if (!array_key_exists('writers', $options)) {
-            throw new \InvalidArgumentException("Key 'writers' is mandatory");
+        if (!array_key_exists('writers', $this->options)) {
+            $this->options['writers'] = array();
         }
 
-        if (!array_key_exists('mute', $options)) {
+        if (!array_key_exists('mute', $this->options)) {
             $this->options['mute'] = false;
         }
 
@@ -158,92 +158,37 @@ class Logger implements ILogger
     }
 
     /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function fatal($msg, array $context = array())
-    {
-        $this->log(static::LEVEL_FATAL, $msg, $context);
-    }
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function error($msg, array $context = array())
-    {
-        $this->log(static::LEVEL_ERROR, $msg, $context);
-    }
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function warn($msg, array $context = array())
-    {
-        $this->log(static::LEVEL_WARN, $msg, $context);
-    }
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function info($msg, array $context = array())
-    {
-        $this->log(static::LEVEL_INFO, $msg, $context);
-    }
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function debug($msg, array $context = array())
-    {
-        $this->log(static::LEVEL_DEBUG, $msg, $context);
-    }
-
-    /**
-     * @param string|\Exception $msg
-     * @param array $context
-     */
-    public function trace($msg, array $context = array())
-    {
-        $this->log(static::LEVEL_TRACE, $msg, $context);
-    }
-
-    /**
-     * @param array $config
+     * @param array $writers
      * @return SplObjectStorage
      * @throws \RuntimeException
      */
-    protected function buildWriters(array $config)
+    protected function buildWriters(array $writers)
     {
-        $writers = new SplObjectStorage();
+        $writerStorage = new SplObjectStorage();
 
-        foreach ($config as $writer) {
-            $writerName = key($writer);
-
-            if (!class_exists($writerName)) {
-                $className = sprintf('Zalora\Punyan\Writer\%s',
-                    ucfirst($writerName)
-                );
-
-                if (!class_exists($className)) {
-                    throw new \RuntimeException(sprintf("Writer '%s' does not exist", $className));
-                }
-
-                $writer = new $className(current($writer));
-            } else {
-                $writer = new $writerName(current($writer));
+        foreach ($writers as $writerConfig) {
+            if (empty($writerConfig) || !is_array($writerConfig) || !is_array(current($writerConfig))) {
+                throw new \InvalidArgumentException('Invalid writer configuration');
             }
+
+            $writerClass = key($writerConfig);
+            if (!class_exists($writerClass)) {
+                $writerClass = sprintf('%s\\%s', IWriter::WRITER_NAMESPACE, ucfirst($writerClass));
+                if (!class_exists($writerClass)) {
+                    throw new \RuntimeException(sprintf("Class '%s' not found...", key($writerConfig)));
+                }
+            }
+
+            $writer = new $writerClass(current($writerConfig));
 
             if (!($writer instanceof IWriter)) {
-                throw new \RuntimeException(sprintf("Writer '%s' does not implement IWriter", $writerName));
+                throw new \RuntimeException(sprintf("Writer '%s' does not implement IWriter", $writerClass));
             }
-            $writers->attach($writer);
+
+            $writerStorage->attach($writer);
         }
 
-        return $writers;
+        return $writerStorage;
     }
 
     /**

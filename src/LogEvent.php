@@ -49,37 +49,15 @@ class LogEvent extends \ArrayObject implements ILogger
         $logEvent->setLevel($level);
 
         if ($msg instanceof \Exception) {
-            $logEvent->setMsg($msg->getMessage());
             $logEvent->setException(
                 static::exceptionToArray($msg)
             );
-        } else {
-            $logEvent->setMsg($msg);
+            $msg = $msg->getMessage();
         }
+        $logEvent->setMsg($msg);
 
         $logEvent->setName($appName);
-
-        // Set formatted UTC timestamp (Seriously PHP?)
-        if (!empty($context['time'])) {
-            $timeParts = explode('.', $context['time']);
-        } else {
-            $timeParts = explode('.', microtime(true));
-        }
-
-        // If you're lucky and PHP returns the exact second...
-        if (count($timeParts) === 1) {
-            $timeParts[1] = '0000';
-        }
-
-        // Add some padding if needed
-        $timeParts[1] = str_pad($timeParts[1], 4, '0');
-
-        $dt = new \DateTime();
-        $dt->setTimezone(new \DateTimeZone('UTC'));
-        $dt->setTimestamp($timeParts[0]);
-        $utcTime = $dt->format('Y-m-d\TH:i:s.') . $timeParts[1] . 'Z';
-
-        $logEvent->setTime($utcTime);
+        $logEvent->setTime(static::getTimestamp($context));
 
         return $logEvent;
     }
@@ -105,6 +83,32 @@ class LogEvent extends \ArrayObject implements ILogger
     }
 
     /**
+     * @param array $context
+     * @return string
+     */
+    protected static function getTimestamp(array $context) {
+        if (empty($context['time'])) {
+            $context['time'] = microtime(true);
+        }
+
+        // Set formatted UTC timestamp (Seriously PHP?)
+        $timeParts = explode('.', $context['time']);
+
+        // If you're lucky and PHP returns the exact second...
+        if (count($timeParts) === 1) {
+            $timeParts[1] = '0000';
+        }
+
+        // Add some padding if needed
+        $timeParts[1] = str_pad($timeParts[1], 4, '0');
+
+        $datetime = new \DateTime();
+        $datetime->setTimezone(new \DateTimeZone('UTC'));
+        $datetime->setTimestamp($timeParts[0]);
+        return $datetime->format('Y-m-d\TH:i:s.') . $timeParts[1] . 'Z';
+    }
+
+    /**
      * Default getters and setters
      * @param string $name
      * @param mixed $arguments
@@ -124,9 +128,10 @@ class LogEvent extends \ArrayObject implements ILogger
         $varName = lcfirst(substr($name, 3));
 
         if ($prefix === 'get') {
-            if (!empty($this[$varName])) {
-                return $this[$varName];
-            } else { return null; }
+            if (empty($this[$varName])) {
+                return null;
+            }
+            return $this[$varName];
         }
 
         if ($prefix === 'set') {

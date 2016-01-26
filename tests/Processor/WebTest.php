@@ -10,6 +10,7 @@ namespace Zalora\Punyan\Writer;
 use Zalora\Punyan\ILogger;
 use Zalora\Punyan\LogEvent;
 use Zalora\Punyan\Processor\IProcessor;
+use Zalora\Punyan\Processor\Web;
 
 /**
  * @package Zalora\Punyan\Processor
@@ -17,9 +18,9 @@ use Zalora\Punyan\Processor\IProcessor;
 class WebTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Run the process method and verify output
+     * The processor should filter out all variables, because they were added to the original $_SERVER array
      */
-    public function testProcess()
+    public function testProcessWithFakeVariables()
     {
         $config = array(
             'url' => 'php://memory',
@@ -30,7 +31,7 @@ class WebTest extends \PHPUnit_Framework_TestCase
         /*
          * As there are not many web related variables in $_SERVER when running on CLI, we fake them...
          */
-        $server['REQUEST_URI'] = 'http://www.zalora.sg';
+        $server['REQUEST_URI'] = '/test.php';
         $server['REQUEST_METHOD'] = 'HUSTLE';
         $server['SERVER_NAME'] = gethostname();
         $server['HTTP_REFERER'] = 'https://duckduckgo.com/?q=zalora+singapore';
@@ -47,10 +48,28 @@ class WebTest extends \PHPUnit_Framework_TestCase
 
         $outArr = json_decode($output, true);
 
-        $this->assertEquals($server['REQUEST_URI'], $outArr[IProcessor::PROCESSOR_KEY]['url']);
-        $this->assertEquals($server['REQUEST_METHOD'], $outArr[IProcessor::PROCESSOR_KEY]['http_method']);
-        $this->assertEquals($server['SERVER_NAME'], $outArr[IProcessor::PROCESSOR_KEY]['server']);
-        $this->assertEquals($server['HTTP_REFERER'], $outArr[IProcessor::PROCESSOR_KEY]['referrer']);
-        $this->assertArrayNotHasKey('ip', $outArr[IProcessor::PROCESSOR_KEY]);
+        $this->assertArrayHasKey(IProcessor::PROCESSOR_KEY, $outArr);
+        $this->assertEmpty($outArr[IProcessor::PROCESSOR_KEY]);
+    }
+
+    /**
+     * Test normal operation with an injected $_SERVER array
+     */
+    public function testProcess()
+    {
+        $server['REQUEST_URI'] = '/test.php';
+        $server['REQUEST_METHOD'] = 'HUSTLE';
+        $server['SERVER_NAME'] = gethostname();
+        $server['HTTP_REFERER'] = 'https://duckduckgo.com/?q=zalora+singapore';
+
+        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');
+        $processor = new Web();
+        $processor->process($logEvent, $server);
+
+        $this->assertEquals($server['REQUEST_URI'], $logEvent[IProcessor::PROCESSOR_KEY]['url']);
+        $this->assertEquals($server['REQUEST_METHOD'], $logEvent[IProcessor::PROCESSOR_KEY]['http_method']);
+        $this->assertEquals($server['SERVER_NAME'], $logEvent[IProcessor::PROCESSOR_KEY]['server']);
+        $this->assertEquals($server['HTTP_REFERER'], $logEvent[IProcessor::PROCESSOR_KEY]['referrer']);
+        $this->assertArrayNotHasKey('ip', $logEvent[IProcessor::PROCESSOR_KEY]);
     }
 }

@@ -12,11 +12,6 @@ namespace Zalora\Punyan\Filter;
 abstract class AbstractFilter implements IFilter
 {
     /**
-     * @var string
-     */
-    const FILTER_NAMESPACE_STUB = 'Zalora\Punyan\Filter\%s';
-
-    /**
      * @var array
      */
     protected $config;
@@ -37,41 +32,36 @@ abstract class AbstractFilter implements IFilter
     protected function init() {}
 
     /**
-     * @param array $config
+     * @param array $filters
      * @return \SplObjectStorage
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function buildFilters(array $config)
+    public static function buildFilters(array $filters)
     {
-        $filters = new \SplObjectStorage();
+        $filterStorage = new \SplObjectStorage();
 
-        foreach ($config as $filter) {
-            if (empty($filter) || !is_array($filter)) {
+        foreach ($filters as $filterConfig) {
+            if (!is_array($filterConfig)) {
                 throw new \InvalidArgumentException('Invalid configuration');
             }
 
-            $filterName = key($filter);
-            if (!class_exists($filterName)) {
-                $className = sprintf(static::FILTER_NAMESPACE_STUB,
-                    ucfirst($filterName)
-                );
-
-                if (!class_exists($className)) {
-                    throw new \RuntimeException(sprintf("Class '%s' not found...", $filterName));
+            $filterClass = key($filterConfig);
+            if (!class_exists($filterClass)) {
+                $filterClass = sprintf('%s\\%s', static::FILTER_NAMESPACE, ucfirst($filterClass));
+                if (!class_exists($filterClass)) {
+                    throw new \RuntimeException(sprintf("Class '%s' not found...", key($filterConfig)));
                 }
-
-                $filter = new $className(current($filter));
-            } else {
-                $filter = new $filterName(current($filter));
             }
+            $filter = new $filterClass(current($filterConfig));
 
             if (!($filter instanceof IFilter)) {
-                throw new \RuntimeException(sprintf("Filter '%s' does not implement IFilter", $filterName));
+                throw new \RuntimeException(sprintf("Filter '%s' does not implement IFilter", $filterClass));
             }
-            $filters->attach($filter);
+
+            $filterStorage->attach($filter);
         }
 
-        return $filters;
+        return $filterStorage;
     }
 }

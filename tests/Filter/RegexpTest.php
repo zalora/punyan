@@ -99,4 +99,21 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($nonExistingFieldReturnFalseFilter->accept($this->logEvent));
         $this->assertTrue($nonExistingFieldReturnTrueFilter->accept($this->logEvent));
     }
+
+    /**
+     * The default field is msg, nested fields are named like 'levelone.leveltwo.levelthree'
+     */
+    public function testMatchingRegexpWithNestedFieldName()
+    {
+        $configCustomField = json_decode(sprintf($this->regexpConfigStub, '|^/|', 'proc.uri', 'false'), true);
+        $context = array(
+            'proc' => array(
+                'uri' => '/info.php'
+            )
+        );
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Foo Bar', $context, 'PHPUnit');
+        $regex = new Regexp($configCustomField);
+
+        $this->assertTrue($regex->accept($logEvent));
+    }
 }

@@ -96,48 +96,83 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * The keys 'filters' and writers must be set, they can however be empty... If they're missing
-     * an InvalidArgumentException is thrown
+     * Empty writers & filters lead to an empty logger
      */
     public function testLoggerWithEmptyOptions()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
-        new Logger('PHPUnit', array());
+        $logger = new Logger('PHPUnit', array());
+
+        $this->assertCount(0, $logger->getWriters());
+        $this->assertCount(0, $logger->getFilters());
     }
 
     /**
-     * The keys 'filters' and writers must be set, they can however be empty... If they're missing
-     * an InvalidArgumentException is thrown
+     * Test combinations of missing options and empty options
      */
     public function testLoggerWithMissingFilters()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
-        new Logger('PHPUnit', array(
+        $logger = new Logger('PHPUnit', array(
             'writers' => array()
         ));
+
+        $this->assertCount(0, $logger->getWriters());
+        $this->assertCount(0, $logger->getFilters());
     }
 
     /**
-     * The keys 'filters' and writers must be set, they can however be empty... If they're missing
-     * an InvalidArgumentException is thrown
+     * Test combinations of missing options and empty options
      */
     public function testLoggerWithMissingWriters()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
-        new Logger('PHPUnit', array(
+        $logger = new Logger('PHPUnit', array(
             'filters' => array()
+        ));
+
+        $this->assertCount(0, $logger->getWriters());
+        $this->assertCount(0, $logger->getFilters());
+    }
+
+    /**
+     * Test combinations of missing options and empty options
+     */
+    public function testValidEmptyLogger()
+    {
+        $logger = new Logger('PHPUnit', array(
+            'filters' => array(),
+            'writers' => array()
+        ));
+
+        $this->assertCount(0, $logger->getWriters());
+        $this->assertCount(0, $logger->getFilters());
+    }
+
+    /**
+     * Test a logger with a config where the configuration is not an array
+     */
+    public function testLoggerWithInvalidWriterConfiguration() {
+        $this->setExpectedException('\\InvalidArgumentException');
+
+        new Logger('PHPUnit', array(
+            'filters' => array(),
+            'writers' => array(
+                array('NoWriter' => '')
+            )
         ));
     }
 
     /**
-     * This logger is empty as well, but sticks to the conventions, so it will start, but not do anything
+     * The NoWriter doesn't have a configuration, so it must be possible to pass an empty array, too
+     * The filters array is now added empty automatically if it's not set
      */
-    public function testValidEmptyLogger()
-    {
-        new Logger('PHPUnit', array(
+    public function testLoggerWithEmptyWriterConfiguration() {
+        $logger = new Logger('PHPUnit', array(
             'filters' => array(),
-            'writers' => array()
+            'writers' => array(
+                array('NoWriter' => array())
+            )
         ));
+
+        $this->assertCount(1, $logger->getWriters());
     }
 
     /**

@@ -13,6 +13,10 @@ use Zalora\Punyan\LogEvent;
  */
 interface IFilter
 {
+    /**
+     * @var string
+     */
+    const FILTER_NAMESPACE = __NAMESPACE__;
 
     /**
      * @param LogEvent $event

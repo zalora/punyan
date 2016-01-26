@@ -15,6 +15,11 @@ use Zalora\Punyan\LogEvent;
 interface IWriter extends ILogger
 {
     /**
+     * @var string
+     */
+    const WRITER_NAMESPACE = __NAMESPACE__;
+
+    /**
      * Prepare for action
      * @return void
      */

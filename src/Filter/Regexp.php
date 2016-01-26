@@ -62,16 +62,14 @@ class Regexp extends AbstractFilter
         }
 
         if (empty($this->config['field'])) {
-            $this->field = static::DEFAULT_FIELD;
-        } else {
-            $this->field = $this->config['field'];
+            $this->config['field'] = static::DEFAULT_FIELD;
         }
+        $this->field = $this->config['field'];
 
         if (empty($this->config['returnValueOnMissingField'])) {
-            $this->returnValueOnMissingField = static::DEFAULT_RETURN_VALUE_ON_MISSING_FIELD;
-        } else {
-            $this->returnValueOnMissingField = $this->config['returnValueOnMissingField'];
+            $this->config['returnValueOnMissingField'] = static::DEFAULT_RETURN_VALUE_ON_MISSING_FIELD;
         }
+        $this->returnValueOnMissingField = $this->config['returnValueOnMissingField'];
     }
 
     /**
@@ -100,9 +98,10 @@ class Regexp extends AbstractFilter
         for ($x = 0; $x < count($fields); $x++) {
             if (array_key_exists($fields[$x], $value)) {
                 $value = $value[$fields[$x]];
-            } else {
-                break;
+                continue;
             }
+
+            break;
         }
 
         if ($x < count($fields) || is_array($value) || is_object($value)) {

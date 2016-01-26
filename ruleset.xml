@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<ruleset name="Punyan PHPMD ruleset"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+    <description>Include all rulesets and add some exceptions</description>
+
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/design.xml" />
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/unusedcode.xml" />
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/codesize.xml">
+        <exclude name="CyclomaticComplexity" />
+        <exclude name="NPathComplexity" />
+    </rule>
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/controversial.xml">
+        <exclude name="CamelCaseMethodName" />
+    </rule>
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+        <exclude name="LongVariable" />
+    </rule>
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/cleancode.xml">
+        <exclude name="StaticAccess" />
+    </rule>
+
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/naming.xml/ShortVariable">
+        <properties>
+            <property name="exceptions" value="e,ex" />
+            <property name="minimum" value="3" />
+        </properties>
+    </rule>
+
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/naming.xml/LongVariable">
+        <properties>
+            <property name="maximum" value="25" />
+        </properties>
+    </rule>
+
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/controversial.xml/CamelCaseMethodName">
+        <properties>
+            <property name="allow-underscore" value="true" />
+        </properties>
+    </rule>
+
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/codesize.xml/CyclomaticComplexity">
+        <properties>
+            <property name="reportLevel" value="11" />
+        </properties>
+    </rule>
+
+    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/codesize.xml/NPathComplexity">
+        <properties>
+            <property name="minimum" value="203" />
+        </properties>
+    </rule>
+</ruleset>

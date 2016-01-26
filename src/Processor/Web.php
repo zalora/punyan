@@ -5,6 +5,7 @@
  */
 
 namespace Zalora\Punyan\Processor;
+
 use Zalora\Punyan\LogEvent;
 
 /**
@@ -25,17 +26,37 @@ class Web implements IProcessor
     );
 
     /**
-     * @param LogEvent $event
-     * @return void
+     * @var array
      */
-    public function process(LogEvent $event)
+    protected $filterSetup = array(
+        'REQUEST_URI' => FILTER_SANITIZE_STRING,
+        'REMOTE_ADDR' => FILTER_VALIDATE_IP,
+        'REQUEST_METHOD' => FILTER_SANITIZE_STRING,
+        'SERVER_NAME' => array(
+            'filter' => FILTER_SANITIZE_STRING,
+            'flag' => FILTER_FLAG_HOST_REQUIRED
+        ),
+        'HTTP_REFERER' => FILTER_VALIDATE_URL
+    );
+
+    /**
+     * The $_SERVER array must be injectable here, otherwise I can't test it (filter_input_array works too well)
+     * @param LogEvent $event
+     * @param array $server
+     */
+    public function process(LogEvent $event, array $server = array())
     {
+        if (empty($server)) {
+            $server = filter_input_array(INPUT_SERVER, $this->filterSetup);
+        }
+
+        $event[static::PROCESSOR_KEY] = array();
         foreach ($this->fields as $key => $field) {
-            if (empty($_SERVER[$field])) {
+            if (empty($server[$field])) {
                 continue;
             }
 
-            $event[static::PROCESSOR_KEY][$key] = $_SERVER[$field];
+            $event[static::PROCESSOR_KEY][$key] = $server[$field];
         }
     }
 }

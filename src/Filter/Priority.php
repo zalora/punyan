@@ -35,10 +35,9 @@ class Priority extends AbstractFilter
     {
         $this->priority = $this->getPriority();
         if (empty($this->config['operator'])) {
-            $this->operator = static::DEFAULT_OPERATOR;
-        } else {
-            $this->operator = $this->config['operator'];
+            $this->config['operator'] = static::DEFAULT_OPERATOR;
         }
+        $this->operator = $this->config['operator'];
     }
 
     /**

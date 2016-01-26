@@ -64,14 +64,14 @@ class Ns extends AbstractFilter
         $this->expectedNamespace = $this->config['namespace'];
 
         if (empty($this->config['searchMethod'])) {
-            $this->searchMethod = static::DEFAULT_SEARCH_METHOD;
-        } else {
-            if (!in_array($this->config['searchMethod'], $this->validSearchMethods)) {
-                throw new \RuntimeException(
-                    sprintf('Search method must be one of those: %s', implode(', ', $this->validSearchMethods))
-                );
-            }
-            $this->searchMethod = $this->config['searchMethod'];
+            $this->config['searchMethod'] = static::DEFAULT_SEARCH_METHOD;
+        }
+        $this->searchMethod = $this->config['searchMethod'];
+
+        if (!in_array($this->searchMethod, $this->validSearchMethods)) {
+            throw new \RuntimeException(
+                sprintf('Search method must be one of those: %s', implode(', ', $this->validSearchMethods))
+            );
         }
 
         // Validate Regexp
