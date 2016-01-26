@@ -1,4 +1,4 @@
-# Punyan [![Build Status](https://travis-ci.org/zalora/punyan.svg?branch=master)](https://travis-ci.org/zalora/punyan)
+# Punyan [![Build Status](https://travis-ci.org/zalora/punyan.svg?branch=master)](https://travis-ci.org/zalora/punyan) [![Test Coverage](https://codeclimate.com/github/zalora/punyan/badges/coverage.svg)](https://codeclimate.com/github/zalora/punyan/coverage)
 
 Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally
 written for node.js
@@ -311,3 +311,17 @@ another logger for PHP.
 In order to change log levels you have to change a file or even worse change code. I want to provide a small CLI
 program which changes the configuration without a need for writeable files or redeploy. This can be achieved by
 storing the configuration in a key value store
+
+#### New Filters
+
+* *Rate Limit*: Together with bubbling turned off, you can omit sending half a billion emails overnight ;-)
+* *Sampler*: Filter out a certain percentage of the events
+
+#### New Writers
+
+* *AMQP*: Sending logs to RabbitMQ
+* *Slack*: Your favorite Messenger
+* *FirePHP*: Sending log events to the browser during development
+* *Responsys*: Sending important logs via E-Mail (Keep the rate limit in mind...)
+* *New Relic*: Your favorite application monitoring tool
+* *Redis*: Persist your logs to a Redis list

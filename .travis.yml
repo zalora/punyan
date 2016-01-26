@@ -6,8 +6,15 @@ php:
   - '5.6'
   - '7.0'
 
+addons:
+    code_climate:
+        repo_token: b88900af4e4ed56d558d6b11203ae65c6d0cd277471b9f0b87075a9e1fe70c1f
+
 install:
-    - mkdir -p build/log
+    - mkdir -p build/logs
     - travis_retry composer update --no-interaction
 
 before_script: phpenv config-add config.ini
+
+after_script:
+  - vendor/bin/test-reporter
