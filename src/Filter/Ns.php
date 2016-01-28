@@ -89,7 +89,7 @@ class Ns extends AbstractFilter
      */
     public function accept(LogEvent $event)
     {
-        if (empty($event['origin'])) {
+        if (empty($event['origin']['class'])) {
             return false;
         }
 
