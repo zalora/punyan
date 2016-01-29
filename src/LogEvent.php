@@ -75,6 +75,38 @@ class LogEvent extends \ArrayObject implements ILogger
         $e['line'] = $ex->getLine();
         $e['trace'] = $ex->getTrace();
 
+        if (empty($e['trace']['args'])) {
+            $e['trace']['args'] = array();
+        }
+
+        // Args handling
+        foreach ($e['trace']['args'] as &$argItem) {
+            $arg = array();
+            $arg['type'] = gettype($argItem);
+
+            switch ($arg['type']) {
+                case 'object':
+                    $arg['class'] = get_class($argItem);
+                    foreach (array('__toString', 'toString', 'toArray') as $method) {
+                        if (method_exists($argItem, $method)) {
+                            try {
+                                $arg['value'] = @call_user_func(array($argItem, $method));
+                            } catch (\Exception $conversionException) {
+                                $arg['value'] = 'unknown';
+                            }
+                        }
+                    }
+                    break;
+                case 'boolean':
+                    $arg['value'] = $argItem ? 'true' : 'false';
+                    break;
+                case 'array':
+                default:
+                    $arg['value'] = $argItem;
+            }
+        }
+
+        // Go through previous exceptions recursively
         if ($ex = $ex->getPrevious()) {
             $e['previous'] = static::exceptionToArray($ex);
         }
