@@ -273,7 +273,15 @@ Of course you can do that manually, but it's a lot of work and it clutters the c
 if the log message itself is filtered out. So you move this code into a Processor and attach it to a writer.
 From that moment on it will gather all the required information automatically.
 
+Processors have one common field:
+
+* onDemand (true|false) default is false
+
 The additional data is stored under the key 'proc', which is defined in `Zalora\Punyan\IProcessor`.
+
+Example:
+
+`{ "Web": { "onDemand": true }` or `{ "Web": { } }`
 
 ### Web Processor
 
