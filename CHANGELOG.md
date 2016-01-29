@@ -1,3 +1,8 @@
+### 0.1.5 (2016-01-29)
+
+* Added on demand flag for processors
+* Pimped exception information extraction
+
 ### 0.1.4 (2016-01-26)
 
 * Added Code Climate
