@@ -175,15 +175,15 @@ abstract class AbstractWriter implements IWriter
     }
 
     /**
-     * @param array $processors
+     * @param array $config
      * @return \SplObjectStorage
-     * @throws \RuntimeException
      */
-    protected function buildProcessors(array $processors)
+    protected function buildProcessors(array $config)
     {
         $processorStorage = new \SplObjectStorage();
 
-        foreach ($processors as $processorName) {
+        foreach ($config as $processorConfig) {
+            $processorName = key($processorConfig);
             $processorClass = $processorName;
 
             if (!class_exists($processorClass)) {
@@ -193,7 +193,7 @@ abstract class AbstractWriter implements IWriter
                 }
             }
 
-            $processor = new $processorClass();
+            $processor = new $processorClass(current($processorConfig));
             if (!($processor instanceof IProcessor)) {
                 throw new \RuntimeException(sprintf("Processor '%s' does not implement IProcessor", $processorClass));
             }

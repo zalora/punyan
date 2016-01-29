@@ -16,4 +16,3 @@ ratings:
   - "**.php"
 exclude_paths:
 - tests/**/*
-- src/StreamWrapper/VariableStream.php

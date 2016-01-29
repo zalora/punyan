@@ -12,9 +12,16 @@ use Zalora\Punyan\LogEvent;
 interface IProcessor
 {
     /**
+     * Key in event log for processors
      * @var string
      */
-    const PROCESSOR_KEY = 'proc';
+    const PROCESSOR_DATA_KEY = 'proc';
+
+    /**
+     * Every processor has to define this key to check for onDemand
+     * @var string
+     */
+    const PROCESSOR_KEY = null;
 
     /**
      * @var string
@@ -23,7 +30,7 @@ interface IProcessor
 
     /**
      * Add data to the log event here
-     * @param LogEvent $event
+     * @param LogEvent $logEvent
      */
-    public function process(LogEvent $event);
+    public function process(LogEvent $logEvent);
 }

@@ -47,6 +47,7 @@ class StreamTest extends \PHPUnit_Framework_TestCase
      */
     public function testLogWithLock()
     {
+        require_once __DIR__ . '/../StreamWrapper/VariableStream.php';
         stream_wrapper_register("globalz", "Zalora\\Punyan\\StreamWrapper\\VariableStream");
 
         $config = array(

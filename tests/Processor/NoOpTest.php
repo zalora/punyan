@@ -28,7 +28,7 @@ class NoOpTest extends \PHPUnit_Framework_TestCase
         $configWithProcessor = array(
             'url' => 'php://memory',
             'filters' => array(),
-            'processors' => array('NoOp')
+            'processors' => array(array('NoOp' => array()))
         );
 
         $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');

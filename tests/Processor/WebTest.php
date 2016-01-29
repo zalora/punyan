@@ -25,7 +25,7 @@ class WebTest extends \PHPUnit_Framework_TestCase
         $config = array(
             'url' => 'php://memory',
             'filters' => array(),
-            'processors' => array('Web')
+            'processors' => array(array('Web' => array()))
         );
 
         /*
@@ -48,8 +48,8 @@ class WebTest extends \PHPUnit_Framework_TestCase
 
         $outArr = json_decode($output, true);
 
-        $this->assertArrayHasKey(IProcessor::PROCESSOR_KEY, $outArr);
-        $this->assertEmpty($outArr[IProcessor::PROCESSOR_KEY]);
+        $this->assertArrayHasKey(IProcessor::PROCESSOR_DATA_KEY, $outArr);
+        $this->assertEmpty($outArr[IProcessor::PROCESSOR_DATA_KEY]);
     }
 
     /**
@@ -66,10 +66,80 @@ class WebTest extends \PHPUnit_Framework_TestCase
         $processor = new Web();
         $processor->process($logEvent, $server);
 
-        $this->assertEquals($server['REQUEST_URI'], $logEvent[IProcessor::PROCESSOR_KEY]['url']);
-        $this->assertEquals($server['REQUEST_METHOD'], $logEvent[IProcessor::PROCESSOR_KEY]['http_method']);
-        $this->assertEquals($server['SERVER_NAME'], $logEvent[IProcessor::PROCESSOR_KEY]['server']);
-        $this->assertEquals($server['HTTP_REFERER'], $logEvent[IProcessor::PROCESSOR_KEY]['referrer']);
-        $this->assertArrayNotHasKey('ip', $logEvent[IProcessor::PROCESSOR_KEY]);
+        $this->assertEquals(
+            $server['REQUEST_URI'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['url']
+        );
+
+        $this->assertEquals(
+            $server['REQUEST_METHOD'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['http_method']
+        );
+
+        $this->assertEquals(
+            $server['SERVER_NAME'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['server']
+        );
+
+        $this->assertEquals(
+            $server['HTTP_REFERER'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['referrer']
+        );
+
+        $this->assertArrayNotHasKey(
+            'ip',
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]
+        );
+    }
+
+    /**
+     * Test onDemand flag
+     */
+    public function testProcessOnDemand()
+    {
+        $server['REQUEST_URI'] = '/test.php';
+        $server['REQUEST_METHOD'] = 'HUSTLE';
+        $server['SERVER_NAME'] = gethostname();
+        $server['HTTP_REFERER'] = 'https://duckduckgo.com/?q=zalora+singapore';
+
+        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');
+        $processorOnDemandTrue = new Web(array(
+            'onDemand' => true
+        ));
+
+        $processorOnDemandFalse = new Web(array(
+            'onDemand' => false
+        ));
+
+        $processorOnDemandTrue->process($logEvent, $server);
+
+        $this->assertArrayNotHasKey(IProcessor::PROCESSOR_DATA_KEY, $logEvent);
+
+        $processorOnDemandFalse->process($logEvent, $server);
+
+        $this->assertEquals(
+            $server['REQUEST_URI'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['url']
+        );
+
+        $this->assertEquals(
+            $server['REQUEST_METHOD'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['http_method']
+        );
+
+        $this->assertEquals(
+            $server['SERVER_NAME'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['server']
+        );
+
+        $this->assertEquals(
+            $server['HTTP_REFERER'],
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]['referrer']
+        );
+
+        $this->assertArrayNotHasKey(
+            'ip',
+            $logEvent[IProcessor::PROCESSOR_DATA_KEY][Web::PROCESSOR_KEY]
+        );
     }
 }

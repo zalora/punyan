@@ -5,10 +5,8 @@
  */
 namespace Zalora\Punyan;
 
-
 abstract class AbstractLogger implements ILogger
 {
-
     /**
      * @param string|\Exception $msg
      * @param array $context

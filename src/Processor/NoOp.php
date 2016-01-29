@@ -10,13 +10,18 @@ use Zalora\Punyan\LogEvent;
 /**
  * @package Zalora\Punyan\Processor
  */
-class NoOp implements IProcessor
+class NoOp extends AbstractProcessor
 {
     /**
-     * @param LogEvent $event
+     * @var string
+     */
+    const PROCESSOR_KEY = 'NoOp';
+
+    /**
+     * @param LogEvent $logEvent
      * @return void
      */
-    public function process(LogEvent $event)
+    public function process(LogEvent $logEvent)
     {
     }
 }

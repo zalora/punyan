@@ -154,8 +154,8 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
             'url' => 'php://memory',
             'filters' => array(),
             'processors' => array(
-                '\\Zalora\Punyan\Processor\NoOp',
-                'NoOp'
+                array('\\Zalora\Punyan\Processor\NoOp' => array()),
+                array('NoOp' => array())
             )
         );
 
@@ -179,7 +179,7 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
             'url' => 'php://memory',
             'filters' => array(),
             'processors' => array(
-                'Freiuhcinuw4rt78oyw4578yt674werngcauyfwaursgdufxghsig'
+                array('Freiuhcinuw4rt78oyw4578yt674werngcauyfwaursgdufxghsig' => array())
             )
         );
 
@@ -197,7 +197,7 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
             'url' => 'php://memory',
             'filters' => array(),
             'processors' => array(
-                '\\stdClass'
+                array('\\stdClass' => array())
             )
         );
 

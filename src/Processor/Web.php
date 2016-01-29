@@ -11,8 +11,13 @@ use Zalora\Punyan\LogEvent;
 /**
  * @package Zalora\Punyan\Processor
  */
-class Web implements IProcessor
+class Web extends AbstractProcessor
 {
+    /**
+     * @var string
+     */
+    const PROCESSOR_KEY = 'Web';
+
     /**
      * Fields to take from $_SERVER
      * @var array
@@ -41,22 +46,26 @@ class Web implements IProcessor
 
     /**
      * The $_SERVER array must be injectable here, otherwise I can't test it (filter_input_array works too well)
-     * @param LogEvent $event
+     * @param LogEvent $logEvent
      * @param array $server
      */
-    public function process(LogEvent $event, array $server = array())
+    public function process(LogEvent $logEvent, array $server = array())
     {
+        if ($this->isOnDemandBailOut($logEvent)) {
+            return;
+        }
+
         if (empty($server)) {
             $server = filter_input_array(INPUT_SERVER, $this->filterSetup);
         }
 
-        $event[static::PROCESSOR_KEY] = array();
+        $logEvent[static::PROCESSOR_DATA_KEY] = array();
         foreach ($this->fields as $key => $field) {
             if (empty($server[$field])) {
                 continue;
             }
 
-            $event[static::PROCESSOR_KEY][$key] = $server[$field];
+            $logEvent[static::PROCESSOR_DATA_KEY][static::PROCESSOR_KEY][$key] = $server[$field];
         }
     }
 }
