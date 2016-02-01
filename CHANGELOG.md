@@ -1,7 +1,8 @@
-### 0.1.5 (2016-01-29)
+### 0.1.5 (2016-02-01)
 
 * Added on demand flag for processors
 * Pimped exception information extraction
+* Access SplStorage for writers and filters by reference
 
 ### 0.1.4 (2016-01-26)
 
