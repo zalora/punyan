@@ -250,11 +250,6 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($logEvent['exception']['message'], 'Hallo');
         $this->assertStringEndsWith('{closure}', $logEvent['exception']['exceptionHandler']);
-
-        $this->assertEquals(
-            $logEvent['exception']['exceptionHandler'],
-            'Zalora\Punyan\LogEventTest::Zalora\Punyan\{closure}'
-        );
     }
 }
 
