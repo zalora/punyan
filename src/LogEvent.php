@@ -45,19 +45,20 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param string|\Exception $msg
      * @param array $context
      * @param string $appName
-     * @param callable $exceptionToArrayHandler
+     * @param mixed $exceptionToArrayHandler
      * @return LogEvent
      */
-    public static function create($level, $msg, array $context, $appName, Callable $exceptionToArrayHandler = null)
+    public static function create($level, $msg, array $context, $appName, $exceptionToArrayHandler = null)
     {
         $logEvent = new LogEvent($context);
         $logEvent->setLevel($level);
 
         if ($msg instanceof \Exception) {
             $exceptionHandler = $exceptionToArrayHandler;
-            if (empty($exceptionHandler)) {
+            if (empty($exceptionHandler) || !is_callable($exceptionHandler)) {
                 $exceptionHandler = static::DEFAULT_EXCEPTION_HANDLER;
             }
+
             $logEvent->setException(call_user_func($exceptionHandler, $msg));
             $msg = $msg->getMessage();
         }
