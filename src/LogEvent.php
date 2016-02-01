@@ -94,6 +94,7 @@ class LogEvent extends \ArrayObject implements ILogger
                             } catch (\Exception $conversionException) {
                                 $arg['value'] = 'unknown';
                             }
+                            break;
                         }
                     }
                     break;
