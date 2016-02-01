@@ -117,11 +117,16 @@ class Logger extends AbstractLogger
 
     /**
      * Return a clone to not accidentally modify stuffs
+     * @param bool $getClone
      * @return SplObjectStorage
      */
-    public function getWriters()
+    public function getWriters($getClone = true)
     {
-        return clone $this->writers;
+        if ($getClone) {
+            return clone $this->writers;
+        }
+
+        return $this->writers;
     }
 
     /**
@@ -142,11 +147,16 @@ class Logger extends AbstractLogger
 
     /**
      * Return a clone to not accidentally modify stuffs
+     * @param bool $getClone
      * @return SplObjectStorage
      */
-    public function getFilters()
+    public function getFilters($getClone = true)
     {
-        return clone $this->filters;
+        if ($getClone) {
+            return clone $this->filters;
+        }
+
+        return $this->filters;
     }
 
     /**

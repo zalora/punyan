@@ -207,4 +207,38 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($logEvent->getNw5tCJdwGdBj0jb());
         $this->assertNull($logEvent->getIbH32Vin29OIDiX());
     }
+
+    /**
+     * Arrange an exception with a bean with a broken toArray() function
+     * Not that realistic, but has to be covered nevertheless
+     */
+    public function testArgumentInExceptionTraceThrowsException() {
+        try {
+            fopen(new BrokenBean);
+        } catch (\PHPUnit_Framework_Error_Warning $ex) {
+            $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, $ex, array(), 'PHPUnit');
+            // Iterate over the trace and check that they all have a type and a value
+            foreach ($logEvent['exception']['trace'] as $trace) {
+                foreach ($trace['args'] as $arg) {
+                    $this->assertArrayHasKey('type', $arg);
+                    $this->assertArrayHasKey('value', $arg);
+                }
+            }
+        }
+    }
+}
+
+class BrokenBean {
+
+    /**
+     * @var int
+     */
+    public $age = 33;
+
+    /**
+     * @throws \RuntimeException
+     */
+    public function toArray() {
+        throw new \RuntimeException("I'm a broken bean");
+    }
 }

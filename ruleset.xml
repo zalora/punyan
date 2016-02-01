@@ -22,6 +22,7 @@
     </rule>
     <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/cleancode.xml">
         <exclude name="StaticAccess" />
+        <exclude name="BooleanArgumentFlag" />
     </rule>
 
     <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/naming.xml/ShortVariable">
@@ -40,12 +41,6 @@
     <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/controversial.xml/CamelCaseMethodName">
         <properties>
             <property name="allow-underscore" value="true" />
-        </properties>
-    </rule>
-
-    <rule ref="vendor/phpmd/phpmd/src/main/resources/rulesets/codesize.xml/CyclomaticComplexity">
-        <properties>
-            <property name="reportLevel" value="11" />
         </properties>
     </rule>
 

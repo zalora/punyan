@@ -218,6 +218,14 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
         // Because the writers were created before we detached the writer object, the count is still 1
         $this->assertCount(1, $writers);
+
+        // Try again with the original
+        $writers = $logger->getWriters(false);
+
+        $logger->removeWriter($writer);
+
+        // As we removed it from the linked collection, it should be empty now
+        $this->assertCount(0, $writers);
     }
 
     /**
@@ -263,6 +271,13 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
         // Because the filters were created before we detached the filter object, the count is still 1
         $this->assertCount(1, $filters);
+
+        // Try again with the original
+        $filters = $logger->getFilters(false);
+        $logger->removeFilter($filter);
+
+        // Same as with the writers above, it should be empty now
+        $this->assertCount(0, $filters);
     }
 
     /**

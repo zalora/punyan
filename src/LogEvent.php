@@ -73,43 +73,51 @@ class LogEvent extends \ArrayObject implements ILogger
         $e['message'] = $ex->getMessage();
         $e['code'] = $ex->getCode();
         $e['line'] = $ex->getLine();
-        $e['trace'] = $ex->getTrace();
+        $e['trace'] = array();
 
-        if (empty($e['trace']['args'])) {
-            $e['trace']['args'] = array();
-        }
+        // Build the trace anew to make sure the original exception is not modified
+        foreach ($ex->getTrace() as $traceItem) {
+            $trace = $traceItem;
+            $trace['args'] = array();
 
-        // Args handling
-        foreach ($e['trace']['args'] as &$argItem) {
-            $arg = array();
-            $arg['type'] = gettype($argItem);
-
-            switch ($arg['type']) {
-                case 'object':
-                    $arg['class'] = get_class($argItem);
-                    foreach (array('__toString', 'toString', 'toArray') as $method) {
-                        if (method_exists($argItem, $method)) {
-                            try {
-                                $arg['value'] = @call_user_func(array($argItem, $method));
-                            } catch (\Exception $conversionException) {
-                                $arg['value'] = 'unknown';
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                case 'boolean':
-                    $arg['value'] = $argItem ? 'true' : 'false';
-                    break;
-                case 'array':
-                default:
-                    $arg['value'] = $argItem;
+            if (empty($traceItem['args'])) {
+                continue;
             }
+
+            foreach ($traceItem['args'] as $argItem) {
+                $arg = array();
+                $arg['type'] = gettype($argItem);
+
+                switch ($arg['type']) {
+                    case 'object':
+                        $arg['class'] = get_class($argItem);
+                        foreach (array('__toString', 'toString', 'toArray') as $method) {
+                            $arg['value'] = null;
+                            if (method_exists($argItem, $method)) {
+                                try {
+                                    $arg['value'] = @call_user_func(array($argItem, $method));
+                                } catch (\Exception $conversionException) {}
+                                break;
+                            }
+                        }
+                        break;
+                    case 'boolean':
+                        $arg['value'] = $argItem ? 'true' : 'false';
+                        break;
+                    case 'array':
+                    default:
+                        $arg['value'] = $argItem;
+                }
+
+                $trace['args'][] = $arg;
+            }
+
+            $e['trace'][] = $trace;
         }
 
         // Go through previous exceptions recursively
-        if ($ex = $ex->getPrevious()) {
-            $e['previous'] = static::exceptionToArray($ex);
+        if ($prevException = $ex->getPrevious()) {
+            $e['previous'] = static::exceptionToArray($prevException);
         }
 
         return $e;
