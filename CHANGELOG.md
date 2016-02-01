@@ -3,6 +3,7 @@
 * Added on demand flag for processors
 * Pimped exception information extraction
 * Access SplStorage for writers and filters by reference
+* Made exception handler in LogEvent configurable (More explanations about that in the README)
 
 ### 0.1.4 (2016-01-26)
 

@@ -105,7 +105,8 @@ class ZLog
     /**
      * @param Logger $instance
      */
-    public static function setInstance(Logger $instance) {
+    public static function setInstance(Logger $instance)
+    {
         static::$instance = $instance;
     }
 
@@ -113,7 +114,8 @@ class ZLog
      * Set the logger instance to null
      * @return void
      */
-    public static function resetInstance() {
+    public static function resetInstance()
+    {
         static::$instance = null;
     }
 }

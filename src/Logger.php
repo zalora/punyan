@@ -38,6 +38,11 @@ class Logger extends AbstractLogger
     protected $filters;
 
     /**
+     * @var string
+     */
+    protected $exceptionHandler = null;
+
+    /**
      * Initialize with the app name and an options array
      * @param string $appName
      * @param array $options
@@ -64,6 +69,11 @@ class Logger extends AbstractLogger
             $this->options['mute'] = false;
         }
 
+        // We need a different exception handler to give some classes a special treatment
+        if (!empty($this->options['exceptionHandler']) && is_callable($this->options['exceptionHandler'])) {
+            $this->exceptionHandler = $this->options['exceptionHandler'];
+        }
+
         $this->filters = AbstractFilter::buildFilters($this->options['filters']);
         $this->writers = $this->buildWriters($this->options['writers']);
     }
@@ -85,7 +95,7 @@ class Logger extends AbstractLogger
             throw new \InvalidArgumentException('Invalid log level, please choose one from interface ILogger');
         }
 
-        $logEvent = LogEvent::create($level, $msg, $context, $this->appName);
+        $logEvent = LogEvent::create($level, $msg, $context, $this->appName, $this->exceptionHandler);
 
         // Check global filters
         $accept = true;
@@ -105,6 +115,43 @@ class Logger extends AbstractLogger
                 break;
             }
         }
+    }
+
+    /**
+     * @param array $backtrace
+     * @return array
+     */
+    public static function getLogOrigin(array $backtrace)
+    {
+        if (count($backtrace) < 2) {
+            return array();
+        }
+
+        // Safely kick the first item
+        array_shift($backtrace);
+
+        $previousItem = null;
+        $stackItem = array();
+
+        foreach ($backtrace as $stackItem) {
+            if (empty($stackItem['class'])) {
+                unset($stackItem['type']);
+                return $stackItem;
+            }
+
+            if (strpos(ltrim($stackItem['class'], '\\'), __NAMESPACE__) === 0) {
+                $previousItem = $stackItem;
+                continue;
+            }
+
+            unset($stackItem['type']);
+            $stackItem['file'] = isset($previousItem['file']) ? $previousItem['file'] : null;
+            $stackItem['line'] = isset($previousItem['line']) ? $previousItem['line'] : null;
+
+            break;
+        }
+
+        return $stackItem;
     }
 
     /**
@@ -168,6 +215,22 @@ class Logger extends AbstractLogger
     }
 
     /**
+     * @return string
+     */
+    public function getExceptionHandler()
+    {
+        return $this->exceptionHandler;
+    }
+
+    /**
+     * @param string $exceptionHandler
+     */
+    public function setExceptionHandler($exceptionHandler)
+    {
+        $this->exceptionHandler = $exceptionHandler;
+    }
+
+    /**
      * @param array $writers
      * @return SplObjectStorage
      * @throws \RuntimeException
@@ -199,41 +262,5 @@ class Logger extends AbstractLogger
         }
 
         return $writerStorage;
-    }
-
-    /**
-     * @param array $backtrace
-     * @return array
-     */
-    public static function getLogOrigin(array $backtrace) {
-        if (count($backtrace) < 2) {
-            return array();
-        }
-
-        // Safely kick the first item
-        array_shift($backtrace);
-
-        $previousItem = null;
-        $stackItem = array();
-
-        foreach ($backtrace as $stackItem) {
-            if (empty($stackItem['class'])) {
-                unset($stackItem['type']);
-                return $stackItem;
-            }
-
-            if (strpos(ltrim($stackItem['class'], '\\'), __NAMESPACE__) === 0) {
-                $previousItem = $stackItem;
-                continue;
-            }
-
-            unset($stackItem['type']);
-            $stackItem['file'] = isset($previousItem['file']) ? $previousItem['file'] : null;
-            $stackItem['line'] = isset($previousItem['line']) ? $previousItem['line'] : null;
-
-            break;
-        }
-
-        return $stackItem;
     }
 }

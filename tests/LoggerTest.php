@@ -706,6 +706,24 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * In order to give mask some secret data in a few special classes we need an external exception handler
+     */
+    public function testExternalExceptionHandler() {
+        $exHandler = function(Exception $ex) {
+            $e = (array) $ex;
+            $e['exceptionHandler'] = __METHOD__;
+
+            return $e;
+        };
+
+        $logger = new Logger('PHPUnit', array('exceptionHandler' => $exHandler));
+        $this->assertTrue(is_callable($logger->getExceptionHandler()));
+
+        $logger->setExceptionHandler(null);
+        $this->assertEmpty($logger->getExceptionHandler());
+    }
+
+    /**
      * @return Logger
      */
     private function getMemoryLogger()

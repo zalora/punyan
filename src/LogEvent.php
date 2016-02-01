@@ -35,23 +35,30 @@ namespace Zalora\Punyan;
 class LogEvent extends \ArrayObject implements ILogger
 {
     /**
+     * @var string
+     */
+    const DEFAULT_EXCEPTION_HANDLER = 'static::exceptionToArray';
+
+    /**
      * Create a new log event (Saves a line or two)
      * @param int $level
      * @param string|\Exception $msg
      * @param array $context
      * @param string $appName
+     * @param callable $exceptionToArrayHandler
      * @return LogEvent
-     * @throws \InvalidArgumentException
      */
-    public static function create($level, $msg, array $context, $appName)
+    public static function create($level, $msg, array $context, $appName, Callable $exceptionToArrayHandler = null)
     {
         $logEvent = new LogEvent($context);
         $logEvent->setLevel($level);
 
         if ($msg instanceof \Exception) {
-            $logEvent->setException(
-                static::exceptionToArray($msg)
-            );
+            $exceptionHandler = $exceptionToArrayHandler;
+            if (empty($exceptionHandler)) {
+                $exceptionHandler = static::DEFAULT_EXCEPTION_HANDLER;
+            }
+            $logEvent->setException(call_user_func($exceptionHandler, $msg));
             $msg = $msg->getMessage();
         }
         $logEvent->setMsg($msg);
@@ -66,7 +73,7 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param \Exception $ex
      * @return array
      */
-    protected static function exceptionToArray(\Exception $ex)
+    public static function exceptionToArray(\Exception $ex)
     {
         $e = array();
         $e['file'] = $ex->getFile();
@@ -127,7 +134,8 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param array $context
      * @return string
      */
-    protected static function getTimestamp(array $context) {
+    protected static function getTimestamp(array $context)
+    {
         if (empty($context['time'])) {
             $context['time'] = microtime(true);
         }
@@ -189,7 +197,8 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param int $level
      * @throws \InvalidArgumentException
      */
-    public function setLevel($level) {
+    public function setLevel($level)
+    {
         if ($level <= 0) {
             throw new \InvalidArgumentException('Level must be a positive integer, @see ILogger');
         }
@@ -201,7 +210,8 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param string $name
      * @throws \InvalidArgumentException
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         if (empty($name)) {
             throw new \InvalidArgumentException('App name is mandatory');
         }

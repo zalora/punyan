@@ -87,9 +87,14 @@ The logger itself expects an array with the same structure.
 }
 ```
 
-The top level mute mutes the whole logger, the mute inside the writers only
-applies for this specific writer. Same for the filters. Every logger can have
-zero or more filters and writers, every writer can have zero or more filters.
+### Top level options
+
+* mute: The top level mute mutes the whole logger, the mute inside the writers only applies for this specific writer
+* filters: The top level filter applies to the whole logger, the filters inside the writers only apply to the specific writer
+* writers: Every logger can have zero or more writers (Of course it's more fun with more than zero writers...)
+* exceptionHandler: To make sure we can mask sensitive data, we need to implement our own special exceptionHandler, 
+  so we made this method configurable. Think about passwords or other sensitive data you don't want to have in your
+  logfiles
 
 ### Filters
 

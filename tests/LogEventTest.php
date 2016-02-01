@@ -212,7 +212,8 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
      * Arrange an exception with a bean with a broken toArray() function
      * Not that realistic, but has to be covered nevertheless
      */
-    public function testArgumentInExceptionTraceThrowsException() {
+    public function testArgumentInExceptionTraceThrowsException()
+    {
         try {
             fopen(new BrokenBean);
         } catch (\PHPUnit_Framework_Error_Warning $ex) {
@@ -226,9 +227,41 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
             }
         }
     }
+
+    /**
+     * Test if exception handler is actually executed
+     * Setting the exception handler from outside is tested in LoggerTest::testExternalExceptionHandler()
+     * @see LoggerTest::testExternalExceptionHandler()
+     */
+    public function testExternalExceptionHandler()
+    {
+        $exHandler = function(\Exception $ex) {
+            $e = array();
+            $e['message'] = $ex->getMessage();
+            $e['exceptionHandler'] = __METHOD__;
+
+            return $e;
+        };
+
+        $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, new \Exception('Hallo'), array(), 'PHPUnit', $exHandler);
+
+        $this->arrayHasKey('message', $logEvent['exception']);
+        $this->arrayHasKey('exceptionHandler', $logEvent['exception']);
+
+        $this->assertEquals($logEvent['exception']['message'], 'Hallo');
+        $this->assertEquals(
+            $logEvent['exception']['exceptionHandler'],
+            'Zalora\Punyan\LogEventTest::Zalora\Punyan\{closure}'
+        );
+    }
 }
 
-class BrokenBean {
+/**
+ * Needed to cause an exception during conversion
+ * @package Zalora\Punyan
+ */
+class BrokenBean
+{
 
     /**
      * @var int
