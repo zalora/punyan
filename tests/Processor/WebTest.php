@@ -48,8 +48,7 @@ class WebTest extends \PHPUnit_Framework_TestCase
 
         $outArr = json_decode($output, true);
 
-        $this->assertArrayHasKey(IProcessor::PROCESSOR_DATA_KEY, $outArr);
-        $this->assertEmpty($outArr[IProcessor::PROCESSOR_DATA_KEY]);
+        $this->assertArrayNotHasKey(IProcessor::PROCESSOR_DATA_KEY, $outArr);
     }
 
     /**

@@ -59,7 +59,6 @@ class Web extends AbstractProcessor
             $server = filter_input_array(INPUT_SERVER, $this->filterSetup);
         }
 
-        $logEvent[static::PROCESSOR_DATA_KEY] = array();
         foreach ($this->fields as $key => $field) {
             if (empty($server[$field])) {
                 continue;
