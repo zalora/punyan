@@ -141,21 +141,8 @@ class LogEvent extends \ArrayObject implements ILogger
             $context['time'] = microtime(true);
         }
 
-        // Set formatted UTC timestamp (Seriously PHP?)
-        $timeParts = explode('.', $context['time']);
-
-        // If you're lucky and PHP returns the exact second...
-        if (count($timeParts) === 1) {
-            $timeParts[1] = '0000';
-        }
-
-        // Add some padding if needed
-        $timeParts[1] = str_pad($timeParts[1], 4, '0');
-
-        $datetime = new \DateTime();
-        $datetime->setTimezone(new \DateTimeZone('UTC'));
-        $datetime->setTimestamp($timeParts[0]);
-        return $datetime->format('Y-m-d\TH:i:s.') . $timeParts[1] . 'Z';
+        $datetime = \DateTime::createFromFormat('U.u', sprintf('%.4F', $context['time']), new \DateTimeZone('UTC'));
+        return $datetime->format('Y-m-d\TH:i:s.') . substr($datetime->format('u'), 0, 4) . 'Z';
     }
 
     /**
