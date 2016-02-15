@@ -103,6 +103,13 @@ class ZLog
     }
 
     /**
+     * @return Logger
+     */
+    public static function getInstance() {
+        return static::$instance;
+    }
+
+    /**
      * @param Logger $instance
      */
     public static function setInstance(Logger $instance)

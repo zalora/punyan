@@ -14,6 +14,20 @@ use Zalora\Punyan\Formatter\Bunyan;
 class ZLogTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * I won't explain that...
+     */
+    public function testGettersAndSetters() {
+        $logger = $this->getMemoryLogger();
+        $this->assertNull(ZLog::getInstance());
+
+        ZLog::setInstance($logger);
+        $this->assertEquals($logger, ZLog::getInstance());
+
+        ZLog::resetInstance();
+        $this->assertNull(ZLog::getInstance());
+    }
+
+    /**
      * Test the trace method
      */
     public function testTrace()
