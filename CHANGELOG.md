@@ -1,3 +1,12 @@
+### 0.1.7 (2016-02-15)
+
+* Refactored timestamp creation
+* Added a getter for ZLog to add writers on the fly
+
+### 0.1.6 (2016-02-02)
+
+* Fixed: Web processor removes all other processor data 
+
 ### 0.1.5 (2016-02-01)
 
 * Added on demand flag for processors
