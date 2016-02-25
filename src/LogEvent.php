@@ -88,10 +88,6 @@ class LogEvent extends \ArrayObject implements ILogger
             $trace = $traceItem;
             $trace['args'] = array();
 
-            if (empty($traceItem['args'])) {
-                continue;
-            }
-
             foreach ($traceItem['args'] as $argItem) {
                 $arg = array();
                 $arg['type'] = gettype($argItem);
