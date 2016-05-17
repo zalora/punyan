@@ -709,7 +709,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      * In order to give mask some secret data in a few special classes we need an external exception handler
      */
     public function testExternalExceptionHandler() {
-        $exHandler = function(Exception $ex) {
+        $exHandler = function(Throwable $ex) {
             $e = (array) $ex;
             $e['exceptionHandler'] = __METHOD__;
 

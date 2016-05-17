@@ -235,7 +235,7 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
      */
     public function testExternalExceptionHandler()
     {
-        $exHandler = function(\Exception $ex) {
+        $exHandler = function(\Throwable $ex) {
             $e = array();
             $e['message'] = $ex->getMessage();
             $e['exceptionHandler'] = __METHOD__;

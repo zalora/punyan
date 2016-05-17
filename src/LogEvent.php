@@ -53,7 +53,7 @@ class LogEvent extends \ArrayObject implements ILogger
         $logEvent = new LogEvent($context);
         $logEvent->setLevel($level);
 
-        if ($msg instanceof \Exception) {
+        if ($msg instanceof \Throwable) {
             $exceptionHandler = $exceptionToArrayHandler;
             if (empty($exceptionHandler) || !is_callable($exceptionHandler)) {
                 $exceptionHandler = static::DEFAULT_EXCEPTION_HANDLER;
@@ -71,10 +71,10 @@ class LogEvent extends \ArrayObject implements ILogger
     }
 
     /**
-     * @param \Exception $ex
+     * @param \Throwable $ex
      * @return array
      */
-    public static function exceptionToArray(\Exception $ex)
+    public static function exceptionToArray(\Throwable $ex)
     {
         $e = array();
         $e['file'] = $ex->getFile();
@@ -100,7 +100,7 @@ class LogEvent extends \ArrayObject implements ILogger
                             if (method_exists($argItem, $method)) {
                                 try {
                                     $arg['value'] = @call_user_func(array($argItem, $method));
-                                } catch (\Exception $conversionException) {}
+                                } catch (\Throwable $conversionException) {}
                                 break;
                             }
                         }
