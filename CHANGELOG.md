@@ -1,3 +1,11 @@
+### 0.1.9 (2016-05-25)
+
+* Fixed: Fixed the exception traces bug again :D - forgot to use the nicely prepared $trace variable
+
+### 0.1.8 (2016-02-25)
+
+* Fixed: Exception Traces without arguments were skipped
+
 ### 0.1.7 (2016-02-15)
 
 * Refactored timestamp creation
