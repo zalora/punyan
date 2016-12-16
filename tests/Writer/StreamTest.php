@@ -22,13 +22,13 @@ class StreamTest extends \PHPUnit_Framework_TestCase
      */
     public function testLog()
     {
-        $config = array(
+        $config = [
             'mute' => false,
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hello Streams', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hello Streams', [], 'PHPUnit');
         $formatter = new Bunyan();
 
         $writer = new Stream($config);
@@ -50,14 +50,14 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         require_once __DIR__ . '/../StreamWrapper/VariableStream.php';
         stream_wrapper_register("globalz", "Zalora\\Punyan\\StreamWrapper\\VariableStream");
 
-        $config = array(
+        $config = [
             'lock' => true,
             'mute' => false,
             'url' => 'globalz://foobar',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hello Streams', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hello Streams', [], 'PHPUnit');
         $formatter = new Bunyan();
 
         $writer = new Stream($config);
@@ -71,16 +71,15 @@ class StreamTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Everyone can open a valid URL, only Chuck Norris can open this
+     * @expectedException \RuntimeException
      */
     public function testOpenInvalidUrl()
     {
-        $this->setExpectedException('\\RuntimeException');
-
-        $config = array(
+        $config = [
             'mute' => false,
             'url' => 'chuckNorris://TryToOpenThis',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
         new Stream($config);
     }
 
@@ -89,30 +88,30 @@ class StreamTest extends \PHPUnit_Framework_TestCase
      */
     public function testBubbling()
     {
-        $configNoBubbling = array(
+        $configNoBubbling = [
             'bubble' => false,
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithBubbling = array(
+        $configWithBubbling = [
             'bubble' => true,
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithBubblingByDefault = array(
+        $configWithBubblingByDefault = [
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithFaultyBubbleSetting = array(
+        $configWithFaultyBubbleSetting = [
             'bubble' => 'yeeha!',
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Bubble Bobble', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Bubble Bobble', [], 'PHPUnit');
 
         $noBubbleWriter = new NoWriter($configNoBubbling);
         $configuredBubbleWriter = new NoWriter($configWithBubbling);

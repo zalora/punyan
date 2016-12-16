@@ -29,16 +29,15 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Foo Bar', array(), 'PHPUnit');
+        $this->logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Foo Bar', [], 'PHPUnit');
     }
 
     /**
      * Invalid regular expressions throw a RuntimeException, they're checked during init()
+     * @expectedException \RuntimeException
      */
     public function testInvalidRegexp()
     {
-        $this->setExpectedException('\\RuntimeException');
-
         $config = json_decode(sprintf($this->regexpConfigStub, '^Foo', '', 'false'), true);
         new Regexp($config);
     }
@@ -106,11 +105,12 @@ class RegexpTest extends \PHPUnit_Framework_TestCase
     public function testMatchingRegexpWithNestedFieldName()
     {
         $configCustomField = json_decode(sprintf($this->regexpConfigStub, '|^/|', 'proc.uri', 'false'), true);
-        $context = array(
-            'proc' => array(
+        $context = [
+            'proc' => [
                 'uri' => '/info.php'
-            )
-        );
+            ]
+        ];
+
         $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Foo Bar', $context, 'PHPUnit');
         $regex = new Regexp($configCustomField);
 

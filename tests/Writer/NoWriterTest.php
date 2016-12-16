@@ -21,12 +21,12 @@ class NoWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testLog()
     {
-        $writer = new NoWriter(array(
-            'filters' => array(),
+        $writer = new NoWriter([
+            'filters' => [],
             'mute' => false
-        ));
+        ]);
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN,'Hallo', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
         $this->assertTrue($writer->log($logEvent));
     }
 
@@ -35,30 +35,30 @@ class NoWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testBubbling()
     {
-        $configNoBubbling = array(
+        $configNoBubbling = [
             'bubble' => false,
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithBubbling = array(
+        $configWithBubbling = [
             'bubble' => true,
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithBubblingByDefault = array(
+        $configWithBubblingByDefault = [
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithFaultyBubbleSetting = array(
+        $configWithFaultyBubbleSetting = [
             'bubble' => 'yeeha!',
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Bubble Bobble', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Bubble Bobble', [], 'PHPUnit');
 
         $noBubbleWriter = new NoWriter($configNoBubbling);
         $configuredBubbleWriter = new NoWriter($configWithBubbling);

@@ -22,34 +22,34 @@ class Web extends AbstractProcessor
      * Fields to take from $_SERVER
      * @var array
      */
-    protected $fields = array(
+    protected $fields = [
         'url'         => 'REQUEST_URI',
         'ip'          => 'REMOTE_ADDR',
         'http_method' => 'REQUEST_METHOD',
         'server'      => 'SERVER_NAME',
         'referrer'    => 'HTTP_REFERER'
-    );
+    ];
 
     /**
      * @var array
      */
-    protected $filterSetup = array(
+    protected $filterSetup = [
         'REQUEST_URI' => FILTER_SANITIZE_STRING,
         'REMOTE_ADDR' => FILTER_VALIDATE_IP,
         'REQUEST_METHOD' => FILTER_SANITIZE_STRING,
-        'SERVER_NAME' => array(
+        'SERVER_NAME' => [
             'filter' => FILTER_SANITIZE_STRING,
             'flag' => FILTER_FLAG_HOST_REQUIRED
-        ),
+        ],
         'HTTP_REFERER' => FILTER_VALIDATE_URL
-    );
+    ];
 
     /**
      * The $_SERVER array must be injectable here, otherwise I can't test it (filter_input_array works too well)
      * @param LogEvent $logEvent
      * @param array $server
      */
-    public function process(LogEvent $logEvent, array $server = array())
+    public function process(LogEvent $logEvent, array $server = [])
     {
         if ($this->isOnDemandBailOut($logEvent)) {
             return;

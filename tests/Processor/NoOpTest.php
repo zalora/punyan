@@ -20,18 +20,18 @@ class NoOpTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcess()
     {
-        $configWithoutProcessor = array(
+        $configWithoutProcessor = [
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $configWithProcessor = array(
+        $configWithProcessor = [
             'url' => 'php://memory',
-            'filters' => array(),
-            'processors' => array(array('NoOp' => array()))
-        );
+            'filters' => [],
+            'processors' => [['NoOp' => []]]
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', ['time' => time()], 'PHPUnit');
 
         $writerWithoutProcessor = new Stream($configWithoutProcessor);
         $writerWithProcessor = new Stream($configWithProcessor);
@@ -39,7 +39,7 @@ class NoOpTest extends \PHPUnit_Framework_TestCase
         $writerWithoutProcessor->log($logEvent);
         $writerWithProcessor->log($logEvent);
 
-        $output = array();
+        $output = [];
         $output[] = stream_get_contents($writerWithoutProcessor->getStream(), -1, 0);
         $output[] = stream_get_contents($writerWithProcessor->getStream(), -1, 0);
 

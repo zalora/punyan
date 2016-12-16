@@ -23,7 +23,7 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testEmptyFilterConfig()
     {
-        $filters = AbstractFilter::buildFilters(array());
+        $filters = AbstractFilter::buildFilters([]);
 
         $this->assertInstanceOf('\\SplObjectStorage', $filters);
         $this->assertCount(0, $filters);
@@ -31,28 +31,30 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Passing in a wrongly structured filter config throws an InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
-    public function testInvalidFilterConfig() {
-        $this->setExpectedException('\\InvalidArgumentException');
-        AbstractFilter::buildFilters(array(1, 2, 3, 'CareBear'));
+    public function testInvalidFilterConfig()
+    {
+        AbstractFilter::buildFilters([1, 2, 3, 'CareBear']);
     }
 
     /**
      * A correctly structured, but still wrong filter config throws a RuntimeException
+     * @expectedException \RuntimeException
      */
-    public function testAnotherInvalidFilterConfig() {
-        $this->setExpectedException('\\RuntimeException');
-        AbstractFilter::buildFilters(array(array('MySuperFilter' => 'No have'), array(3 => 4), array(5 => 'CareBear')));
+    public function testAnotherInvalidFilterConfig()
+    {
+        AbstractFilter::buildFilters([['MySuperFilter' => 'No have'], [3 => 4], [5 => 'CareBear']]);
     }
 
     /**
      * Normal operating builder
      */
     public function testBuildFilters() {
-        $config = array(
-            array('NoFilter' => array()),
-            array('NoFilter' => array())
-        );
+        $config = [
+            ['NoFilter' => []],
+            ['NoFilter' => []]
+        ];
 
         $filters = AbstractFilter::buildFilters($config);
 
@@ -68,10 +70,7 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
      * Include pseudo external filter
      */
     public function testBuildFilterWithFullClassName() {
-        $config = array(
-            array('Zalora\Punyan\Filter\NoFilter' => array())
-        );
-
+        $config = [['Zalora\Punyan\Filter\NoFilter' => []]];
         $filters = AbstractFilter::buildFilters($config);
 
         $this->assertInstanceOf('\\SplObjectStorage', $filters);
@@ -83,13 +82,10 @@ class AbstractFilterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Include pseudo external filter
+     * @expectedException \RuntimeException
      */
     public function testBuildFiltersWithFilterNotImplementingIFilter() {
-        $this->setExpectedException('\RuntimeException');
-        $config = array(
-            array('\stdClass' => array())
-        );
-
+        $config = [['\stdClass' => []]];
         AbstractFilter::buildFilters($config);
     }
 }

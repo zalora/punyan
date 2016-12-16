@@ -17,9 +17,10 @@ class DiscoBouncerTest extends \PHPUnit_Framework_TestCase
     /**
      * Always returns false, good for unit tests
      */
-    public function testAccept() {
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit');
-        $noFilter = new DiscoBouncer(array());
+    public function testAccept()
+    {
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', [], 'PHPUnit');
+        $noFilter = new DiscoBouncer([]);
 
         $this->assertFalse($noFilter->accept($logEvent));
     }

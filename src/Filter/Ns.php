@@ -49,11 +49,11 @@ class Ns extends AbstractFilter
     /**
      * @var array
      */
-    protected $validSearchMethods = array(
+    protected $validSearchMethods = [
         self::SEARCH_METHOD_STARTS_WITH,
         self::SEARCH_METHOD_CONTAINS,
         self::SEARCH_METHOD_REGEXP
-    );
+    ];
 
     /**
      * @return void
@@ -87,7 +87,7 @@ class Ns extends AbstractFilter
      * @param LogEvent $event
      * @return bool
      */
-    public function accept(LogEvent $event)
+    public function accept(LogEvent $event) : bool
     {
         if (empty($event['origin']['class'])) {
             return false;
@@ -105,6 +105,9 @@ class Ns extends AbstractFilter
                 return ($pos >= 0);
             case static::SEARCH_METHOD_REGEXP:
                 return (preg_match($this->expectedNamespace, $event['origin']['class']) > 0);
+                break;
+            default:
+                return false;
     // @codeCoverageIgnoreStart
         }
     }

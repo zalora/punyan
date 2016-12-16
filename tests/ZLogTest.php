@@ -14,17 +14,36 @@ use Zalora\Punyan\Formatter\Bunyan;
 class ZLogTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * I won't explain that...
+     * Fetching a not set instance will result in a type error, because we're not (yet) able to return null
+     * @expectedException \TypeError
      */
-    public function testGettersAndSetters() {
+    public function testGetEmptyLogger()
+    {
+        ZLog::getInstance();
+    }
+
+    /**
+     * After resetting the instance the TypeError should be back
+     * @expectedException \TypeError
+     */
+    public function testTypeErrorAfterReset() {
         $logger = $this->getMemoryLogger();
-        $this->assertNull(ZLog::getInstance());
 
         ZLog::setInstance($logger);
         $this->assertEquals($logger, ZLog::getInstance());
 
         ZLog::resetInstance();
-        $this->assertNull(ZLog::getInstance());
+        ZLog::getInstance();
+    }
+
+    /**
+     * I won't explain that...
+     */
+    public function testGettersAndSetters() {
+        $logger = $this->getMemoryLogger();
+
+        ZLog::setInstance($logger);
+        $this->assertEquals($logger, ZLog::getInstance());
     }
 
     /**
@@ -54,10 +73,10 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the trace method with empty logger instance
+     * @expectedException \RuntimeException
      */
     public function testEmptyTrace()
     {
-        $this->setExpectedException('\\RuntimeException');
         ZLog::resetInstance();
         ZLog::trace('PHPUnit');
     }
@@ -89,10 +108,10 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the debug method with empty logger instance
+     * @expectedException \RuntimeException
      */
     public function testEmptyDebug()
     {
-        $this->setExpectedException('\\RuntimeException');
         ZLog::resetInstance();
         ZLog::debug('PHPUnit');
     }
@@ -124,10 +143,10 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the info method with empty logger instance
+     * @expectedException \RuntimeException
      */
     public function testEmptyInfo()
     {
-        $this->setExpectedException('\\RuntimeException');
         ZLog::resetInstance();
         ZLog::info('PHPUnit');
     }
@@ -159,10 +178,10 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the warn method with empty logger instance
+     * @expectedException \RuntimeException
      */
     public function testEmptyWarn()
     {
-        $this->setExpectedException('\\RuntimeException');
         ZLog::resetInstance();
         ZLog::warn('PHPUnit');
     }
@@ -194,10 +213,10 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the error method with empty logger instance
+     * @expectedException \RuntimeException
      */
     public function testEmptyError()
     {
-        $this->setExpectedException('\\RuntimeException');
         ZLog::resetInstance();
         ZLog::error('PHPUnit');
     }
@@ -229,10 +248,10 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test the fatal method with empty logger instance
+     * @expectedException \RuntimeException
      */
     public function testEmptyFatal()
     {
-        $this->setExpectedException('\\RuntimeException');
         ZLog::resetInstance();
         ZLog::fatal('PHPUnit');
     }
@@ -256,12 +275,13 @@ class ZLogTest extends \PHPUnit_Framework_TestCase
     /**
      * PHP 7 needs to rewind the SPLObjectStorage before you can extract items with current...
      * @param Logger $logger
-     * @return Stream
+     * @return resource
      */
     private function getCurrentStreamFromLogger(Logger $logger)
     {
         $writers = $logger->getWriters();
         $writers->rewind();
+
         return $writers->current()->getStream();
     }
 }

@@ -24,13 +24,13 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testMutedWriter()
     {
-        $config = array(
+        $config = [
             'mute' => true,
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Shut up', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Shut up', [], 'PHPUnit');
 
         $writer = new Stream($config);
         $writer->log($logEvent);
@@ -46,15 +46,15 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testPassFilters()
     {
-        $config = array(
+        $config = [
             'mute' => false,
             'url' => 'php://memory',
-            'filters' => array(
-                array('NoFilter' => array())
-            )
-        );
+            'filters' => [
+                ['NoFilter' => []]
+            ]
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hello Streams', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hello Streams', [], 'PHPUnit');
         $formatter = new Bunyan();
 
         $writer = new Stream($config);
@@ -71,15 +71,15 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testNoPassFilters()
     {
-        $config = array(
+        $config = [
             'mute' => false,
             'url' => 'php://memory',
-            'filters' => array(
-                array('DiscoBouncer' => array())
-            )
-        );
+            'filters' => [
+                ['DiscoBouncer' => []]
+            ]
+        ];
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Shut up', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Shut up', [], 'PHPUnit');
 
         $writer = new Stream($config);
         $writer->log($logEvent);
@@ -95,17 +95,17 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testManageFiltersAfterInit()
     {
-        $config = array(
+        $config = [
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
         $writer = new NoWriter($config);
         $filters = $writer->getFilters();
 
         $this->assertCount(0, $filters);
 
-        $filter = new NoFilter(array());
+        $filter = new NoFilter([]);
         $writer->addFilter($filter);
 
         // As filters is a clone, it must be still zero
@@ -123,10 +123,10 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testManageProcessorsAfterInit()
     {
-        $config = array(
+        $config = [
             'url' => 'php://memory',
-            'filters' => array()
-        );
+            'filters' => []
+        ];
 
         $writer = new NoWriter($config);
         $processors = $writer->getProcessors();
@@ -149,15 +149,16 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * Provide a config array and have filters built
      */
-    public function testBuildProcessorsFromConfig() {
-        $config = array(
+    public function testBuildProcessorsFromConfig()
+    {
+        $config = [
             'url' => 'php://memory',
-            'filters' => array(),
-            'processors' => array(
-                array('\\Zalora\Punyan\Processor\NoOp' => array()),
-                array('NoOp' => array())
-            )
-        );
+            'filters' => [],
+            'processors' => [
+                ['\\Zalora\Punyan\Processor\NoOp' => []],
+                ['NoOp' => []]
+            ]
+        ];
 
         $writer = new NoWriter($config);
         $processors = $writer->getProcessors();
@@ -171,35 +172,36 @@ class AbstractWriterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Use a non-existing class in the configuration
+     * @expectedException \RuntimeException
      */
-    public function testNonExistingProcessor() {
-        $this->setExpectedException('\\RuntimeException');
-
-        $config = array(
+    public function testNonExistingProcessor()
+    {
+        $config = [
             'url' => 'php://memory',
-            'filters' => array(),
-            'processors' => array(
-                array('Freiuhcinuw4rt78oyw4578yt674werngcauyfwaursgdufxghsig' => array())
-            )
-        );
+            'filters' => [],
+            'processors' => [
+                ['Freiuhcinuw4rt78oyw4578yt674werngcauyfwaursgdufxghsig' => []]
+            ]
+        ];
 
         new NoWriter($config);
     }
 
     /**
      * Use a processor which doesn't implement IProcessor
+     * @expectedException \RuntimeException
      */
     public function testInvalidProcessor()
     {
         $this->setExpectedException('\\RuntimeException');
 
-        $config = array(
+        $config = [
             'url' => 'php://memory',
-            'filters' => array(),
-            'processors' => array(
-                array('\\stdClass' => array())
-            )
-        );
+            'filters' => [],
+            'processors' => [
+                ['\\stdClass' => []]
+            ]
+        ];
 
         new NoWriter($config);
     }

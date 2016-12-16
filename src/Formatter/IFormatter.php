@@ -18,6 +18,6 @@ interface IFormatter
      * @param LogEvent $logEvent
      * @return string
      */
-    public function format(LogEvent $logEvent);
+    public function format(LogEvent $logEvent) : string;
 
 }

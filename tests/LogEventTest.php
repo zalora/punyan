@@ -33,21 +33,21 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     /**
      * Log events have to be created with an integer value log level, otherwise
      * a RuntimeException is thrown
-     * @see Zalora\Punyan\ILogger
+     * @see \Zalora\Punyan\ILogger
+     * @expectedException \TypeError
      */
     public function testCreateWithInvalidLogLevel()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
-        LogEvent::create('Good morning', 'Hallo Test', array(), 'PHPUnit');
+        LogEvent::create('Good morning', 'Hallo Test', [], 'PHPUnit');
     }
 
     /**
      * App name is mandatory, if a log event is created without an InvalidArgumentException is thrown
+     * @expectedException \InvalidArgumentException
      */
     public function testCreateWithEmptyAppname()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
-        LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array(), '');
+        LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', [], '');
     }
 
     /**
@@ -56,7 +56,7 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     public function testCreatePredefinedTime()
     {
         $time = sprintf('%d.1234', time());
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array('time' => $time), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', ['time' => $time], 'PHPUnit');
 
         $this->assertEquals('1234', substr($logEvent->getTime(), -5, -1));
     }
@@ -67,7 +67,7 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     public function testCreatePredefinedTimeWithoutMicroseconds()
     {
         $time = time();
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array('time' => $time), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', ['time' => $time], 'PHPUnit');
 
         $this->assertEquals('0000', substr($logEvent->getTime(), -5, -1));
     }
@@ -77,7 +77,7 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateWithExceptionWithoutPrevious()
     {
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, $this->runtimeEx, array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, $this->runtimeEx, [], 'PHPUnit');
         $logEventData = $logEvent->getArrayCopy();
 
         $this->assertNotEmpty($logEventData);
@@ -110,7 +110,7 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateWithExceptionWithPrevious()
     {
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, $this->invargEx, array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, $this->invargEx, [], 'PHPUnit');
         $logEventData = $logEvent->getArrayCopy();
 
         $this->assertNotEmpty($logEventData);
@@ -156,36 +156,33 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
      * Log events only support getters and setters, if you try to call other methods,
      * a BadFunctionCallException is thrown. Methods shorter than 4 chars are invalid,
      * because they can't be a valid getter or setter
+     * @expectedException \BadFunctionCallException
      */
     public function testShortInvalidMethodCall()
     {
-        $this->setExpectedException('\\BadFunctionCallException');
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
-
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', [], 'PHPUnit');
         $logEvent->get();
     }
 
     /**
      * Methods longer than 3 chars have to start with 'get' or 'set' to be valid,
      * otherwise a BadFunctionCallException is thrown
+     * @expectedException \BadFunctionCallException
      */
     public function testLongInvalidMethodCall()
     {
-        $this->setExpectedException('\\BadFunctionCallException');
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
-
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', [], 'PHPUnit');
         $logEvent->fooBar();
     }
 
     /**
      * Getters and setters are implemented with the __call() function, setters of course
      * have to set a value, if called without it throws an InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testEmptySetter()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
-
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', [], 'PHPUnit');
         $logEvent->setTime();
     }
 
@@ -194,7 +191,7 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
      */
     public function testEmptyGetter()
     {
-        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_ERROR, 'Hallo', [], 'PHPUnit');
 
         $this->assertNull($logEvent->getADcUX3qKyFnITCF());
         $this->assertNull($logEvent->getCLkJM6kFz8JvYEj());
@@ -215,9 +212,9 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     public function testArgumentInExceptionTraceThrowsException()
     {
         try {
-            fopen(new BrokenBean);
+            fopen(new BrokenBean, 'r');
         } catch (\PHPUnit_Framework_Error_Warning $ex) {
-            $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, $ex, array(), 'PHPUnit');
+            $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, $ex, [], 'PHPUnit');
             // Iterate over the trace and check that they all have a type and a value
             foreach ($logEvent['exception']['trace'] as $trace) {
                 foreach ($trace['args'] as $arg) {
@@ -236,20 +233,44 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
     public function testExternalExceptionHandler()
     {
         $exHandler = function(\Throwable $ex) {
-            $e = array();
+            $e = [];
             $e['message'] = $ex->getMessage();
             $e['exceptionHandler'] = __METHOD__;
 
             return $e;
         };
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, new \Exception('Hallo'), array(), 'PHPUnit', $exHandler);
+        $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, new \Exception('Hallo'), [], 'PHPUnit', $exHandler);
 
-        $this->arrayHasKey('message', $logEvent['exception']);
-        $this->arrayHasKey('exceptionHandler', $logEvent['exception']);
+        $this->assertArrayHasKey('message', $logEvent['exception']);
+        $this->assertArrayHasKey('exceptionHandler', $logEvent['exception']);
 
         $this->assertEquals($logEvent['exception']['message'], 'Hallo');
         $this->assertStringEndsWith('{closure}', $logEvent['exception']['exceptionHandler']);
+    }
+
+    /**
+     * Test if the log level name is dragged along properly
+     */
+    public function testLogLevelName()
+    {
+        $event = LogEvent::create(ILogger::LEVEL_TRACE, 'Hallo', [], 'PHPUnit');
+        $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
+
+        $event->setLevel(ILogger::LEVEL_DEBUG);
+        $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
+
+        $event->setLevel(ILogger::LEVEL_INFO);
+        $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
+
+        $event->setLevel(ILogger::LEVEL_WARN);
+        $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
+
+        $event->setLevel(ILogger::LEVEL_ERROR);
+        $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
+
+        $event->setLevel(ILogger::LEVEL_FATAL);
+        $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
     }
 }
 
@@ -259,7 +280,6 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
  */
 class BrokenBean
 {
-
     /**
      * @var int
      */

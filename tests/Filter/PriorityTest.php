@@ -27,18 +27,18 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Create some log events with different priorities
      */
     protected function setUp()
     {
-        $this->filters[ILogger::LEVEL_TRACE] = LogEvent::create(ILogger::LEVEL_TRACE, '', array(), 'PHPUnit');
-        $this->filters[ILogger::LEVEL_INFO] = LogEvent::create(ILogger::LEVEL_INFO, '', array(), 'PHPUnit');
-        $this->filters[ILogger::LEVEL_WARN] = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit');
-        $this->filters[ILogger::LEVEL_ERROR] = LogEvent::create(ILogger::LEVEL_ERROR, '', array(), 'PHPUnit');
-        $this->filters[ILogger::LEVEL_FATAL] = LogEvent::create(ILogger::LEVEL_FATAL, '', array(), 'PHPUnit');
+        $this->filters[ILogger::LEVEL_TRACE] = LogEvent::create(ILogger::LEVEL_TRACE, '', [], 'PHPUnit');
+        $this->filters[ILogger::LEVEL_INFO] = LogEvent::create(ILogger::LEVEL_INFO, '', [], 'PHPUnit');
+        $this->filters[ILogger::LEVEL_WARN] = LogEvent::create(ILogger::LEVEL_WARN, '', [], 'PHPUnit');
+        $this->filters[ILogger::LEVEL_ERROR] = LogEvent::create(ILogger::LEVEL_ERROR, '', [], 'PHPUnit');
+        $this->filters[ILogger::LEVEL_FATAL] = LogEvent::create(ILogger::LEVEL_FATAL, '', [], 'PHPUnit');
     }
 
     /**
@@ -93,11 +93,11 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Initializing a prio filter without prio gives you a RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testConfigWithMissingPriority()
     {
-        $this->setExpectedException('\\RuntimeException');
-        new Priority(array());
+        new Priority([]);
     }
 
     /**
@@ -105,24 +105,24 @@ class PriorityTest extends \PHPUnit_Framework_TestCase
      */
     public function testConfigWithNumericPriority()
     {
-        new Priority(array('priority' => 10));
+        new Priority(['priority' => 10]);
     }
 
     /**
      * Priorities <= 0 are invalid (of course) and trigger an InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testConfigWithInvalidNumericPriority()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
         new Priority(array('priority' => -12));
     }
 
     /**
      * Unknown string priorities trigger an InvalidArgumentException as well
+     * @expectedException \InvalidArgumentException
      */
     public function testConfigWithInvalidStringPriority()
     {
-        $this->setExpectedException('\\InvalidArgumentException');
         new Priority(array('priority' => 'turmoil'));
     }
 }

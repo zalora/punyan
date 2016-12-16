@@ -22,7 +22,7 @@ class ZLog
      * @param array $context
      * @throws \RuntimeException
      */
-    public static function fatal($msg, array $context = array())
+    public static function fatal($msg, array $context = [])
     {
         if (empty(static::$instance)) {
             throw new \RuntimeException('Logger instance not added to proxy yet');
@@ -36,7 +36,7 @@ class ZLog
      * @param array $context
      * @throws \RuntimeException
      */
-    public static function error($msg, array $context = array())
+    public static function error($msg, array $context = [])
     {
         if (empty(static::$instance)) {
             throw new \RuntimeException('Logger instance not added to proxy yet');
@@ -50,7 +50,7 @@ class ZLog
      * @param array $context
      * @throws \RuntimeException
      */
-    public static function warn($msg, array $context = array())
+    public static function warn($msg, array $context = [])
     {
         if (empty(static::$instance)) {
             throw new \RuntimeException('Logger instance not added to proxy yet');
@@ -65,7 +65,7 @@ class ZLog
      * @param array $context
      * @throws \RuntimeException
      */
-    public static function info($msg, array $context = array())
+    public static function info($msg, array $context = [])
     {
         if (empty(static::$instance)) {
             throw new \RuntimeException('Logger instance not added to proxy yet');
@@ -79,7 +79,7 @@ class ZLog
      * @param array $context
      * @throws \RuntimeException
      */
-    public static function debug($msg, array $context = array())
+    public static function debug($msg, array $context = [])
     {
         if (empty(static::$instance)) {
             throw new \RuntimeException('Logger instance not added to proxy yet');
@@ -93,7 +93,7 @@ class ZLog
      * @param array $context
      * @throws \RuntimeException
      */
-    public static function trace($msg, array $context = array())
+    public static function trace($msg, array $context = [])
     {
         if (empty(static::$instance)) {
             throw new \RuntimeException('Logger instance not added to proxy yet');
@@ -105,7 +105,8 @@ class ZLog
     /**
      * @return Logger
      */
-    public static function getInstance() {
+    public static function getInstance() : Logger
+    {
         return static::$instance;
     }
 
