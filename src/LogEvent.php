@@ -74,9 +74,10 @@ class LogEvent extends \ArrayObject implements ILogger
 
     /**
      * @param \Throwable $ex
+     * @param bool $skipTrace
      * @return array
      */
-    public static function exceptionToArray(\Throwable $ex)
+    public static function exceptionToArray(\Throwable $ex, $skipTrace = false)
     {
         $e = [];
         $e['file'] = $ex->getFile();
@@ -85,12 +86,15 @@ class LogEvent extends \ArrayObject implements ILogger
         $e['line'] = $ex->getLine();
         $e['trace'] = [];
 
+        if ($skipTrace) {
+            return $e;
+        }
+
         // Build the trace anew to make sure the original exception is not modified
         foreach ($ex->getTrace() as $traceItem) {
-            $trace = $traceItem;
-            $trace['args'] = [];
+            $trace = [];
 
-            foreach ($trace['args'] as $argItem) {
+            foreach ($traceItem['args'] as $argItem) {
                 $arg = [];
                 $arg['type'] = gettype($argItem);
 
@@ -116,6 +120,10 @@ class LogEvent extends \ArrayObject implements ILogger
                 }
 
                 $trace['args'][] = $arg;
+            }
+
+            if (empty($trace)) {
+                continue;
             }
 
             $e['trace'][] = $trace;

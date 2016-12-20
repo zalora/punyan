@@ -105,11 +105,8 @@ class Ns extends AbstractFilter
                 return ($pos >= 0);
             case static::SEARCH_METHOD_REGEXP:
                 return (preg_match($this->expectedNamespace, $event['origin']['class']) > 0);
-                break;
-            default:
-                return false;
-    // @codeCoverageIgnoreStart
         }
+    // @codeCoverageIgnoreStart
     }
     // @codeCoverageIgnoreStop
 }

@@ -214,14 +214,18 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
         try {
             fopen(new BrokenBean, 'r');
         } catch (\PHPUnit_Framework_Error_Warning $ex) {
-            $logEvent = LogEvent::create(ILogger::LEVEL_FATAL, $ex, [], 'PHPUnit');
+            $exceptionArray = LogEvent::exceptionToArray($ex);
+
             // Iterate over the trace and check that they all have a type and a value
-            foreach ($logEvent['exception']['trace'] as $trace) {
+            foreach ($exceptionArray['trace'] as $trace) {
                 foreach ($trace['args'] as $arg) {
                     $this->assertArrayHasKey('type', $arg);
                     $this->assertArrayHasKey('value', $arg);
                 }
             }
+
+            $exceptionArrayWithoutTrace = LogEvent::exceptionToArray($ex, true);
+            $this->assertEmpty($exceptionArrayWithoutTrace['trace']);
         }
     }
 
@@ -271,6 +275,15 @@ class LogEventTest extends \PHPUnit_Framework_TestCase
 
         $event->setLevel(ILogger::LEVEL_FATAL);
         $this->assertEquals($event->getLevelName(), Logger::getLevelNameByLevel($event->getLevel()));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetLevel()
+    {
+        $event = LogEvent::create(ILogger::LEVEL_TRACE, 'Hallo', [], 'PHPUnit');
+        $event->setLevel(-5);
     }
 }
 
