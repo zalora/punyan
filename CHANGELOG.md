@@ -1,3 +1,19 @@
+### 1.0.1 (2016-12-20)
+
+* Added type hinting for primitives
+* Added return values
+* Removed old `array()` statements 
+* Fixed default implementation of `exceptionToArray()`
+* Added a parameter to exceptionToArray to skip the trace
+
+### 1.0.0 (2016-12-20)
+
+* Merged the php7-branch to master
+
+### 0.1.10 (2016-12-20)
+
+* Deprecated the current master branch (Pre PHP7)
+
 ### 0.1.9 (2016-05-25)
 
 * Fixed: Fixed the exception traces bug again :D - forgot to use the nicely prepared $trace variable

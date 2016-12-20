@@ -1,13 +1,11 @@
-# Punyan Legacy
-
-The legacy branch supports version PHP 5.3 - 5.6. It will only receive bugfixes, but no new features. 
+# Punyan [![Build Status](https://travis-ci.org/zalora/punyan.svg?branch=master)](https://travis-ci.org/zalora/punyan) [![Test Coverage](https://codeclimate.com/github/zalora/punyan/badges/coverage.svg)](https://codeclimate.com/github/zalora/punyan/coverage) [![Code Climate](https://codeclimate.com/github/zalora/punyan/badges/gpa.svg)](https://codeclimate.com/github/zalora/punyan)
 
 Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally written for node.js
 
 ## Requirements
 
 * Linux / OS X (Maybe someone with Windows wants to try?)
-* PHP 5.3+
+* PHP 7.x
 * Composer
 * NPM
 
@@ -31,16 +29,16 @@ Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trent
 ```
 
 ```php
-$config = array(
-    'writers' => array(
-        array('stream' => array(
+$config = [
+    'writers' => [
+        ['stream' => [
             'url' => '/tmp/myproject.log',
-            'filters' => array(
-                array('priority' => array('priority' => 'info'))
-            )
-        ))
-    )
-);
+            'filters' => [
+                ['priority' => ['priority' => 'info']]
+            ]
+        ]]
+    ]
+];
 ```
 
 ```php
@@ -52,7 +50,7 @@ ZLog::setInstance(new Logger('MyAppName', $config));
 
 ...
 
-ZLog::info('Informative log message', array('param1' => 'stuffs'));
+ZLog::info('Informative log message', ['param1' => 'stuffs']);
 ```
 
 ```bash
