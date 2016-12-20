@@ -27,7 +27,7 @@ abstract class AbstractProcessor implements IProcessor
      * AbstractProcessor constructor.
      * @param array $config
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         $this->config = $config;
 
@@ -50,7 +50,7 @@ abstract class AbstractProcessor implements IProcessor
      * @param LogEvent $logEvent
      * @return bool
      */
-    protected function isOnDemandBailOut(LogEvent $logEvent)
+    protected function isOnDemandBailOut(LogEvent $logEvent) : bool
     {
         if ($this->onDemand === true &&
             (!(array_key_exists(static::PROCESSOR_DATA_KEY, $logEvent) &&

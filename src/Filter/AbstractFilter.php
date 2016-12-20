@@ -6,6 +6,8 @@
 
 namespace Zalora\Punyan\Filter;
 
+use SplObjectStorage;
+
 /**
  * @package Zalora\Punyan\Filter
  */
@@ -29,17 +31,19 @@ abstract class AbstractFilter implements IFilter
      * Override this method if you need initialization
      * @return void
      */
-    protected function init() {}
+    protected function init()
+    {
+    }
 
     /**
      * @param array $filters
-     * @return \SplObjectStorage
+     * @return SplObjectStorage
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function buildFilters(array $filters)
+    public static function buildFilters(array $filters) : SplObjectStorage
     {
-        $filterStorage = new \SplObjectStorage();
+        $filterStorage = new SplObjectStorage();
 
         foreach ($filters as $filterConfig) {
             if (!is_array($filterConfig)) {

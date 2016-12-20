@@ -22,7 +22,7 @@ class Bunyan implements IFormatter
      * @param LogEvent $logEvent
      * @return string
      */
-    public function format(LogEvent $logEvent)
+    public function format(LogEvent $logEvent) : string
     {
         $logEvent->setHostname(gethostname());
         $logEvent->setPid(getmypid());

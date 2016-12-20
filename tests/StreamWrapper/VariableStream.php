@@ -12,8 +12,8 @@ namespace Zalora\Punyan\StreamWrapper;
  * @package StreamWrapper
  * @codeCoverageIgnore
  */
-class VariableStream {
-
+class VariableStream
+{
     /**
      * @var int
      */
@@ -37,6 +37,7 @@ class VariableStream {
         $this->varname = $url['host'];
         $this->position = 0;
         $GLOBALS[$this->varname] = '';
+
         return true;
     }
 
@@ -48,6 +49,7 @@ class VariableStream {
     {
         $ret = substr($GLOBALS[$this->varname], $this->position, $count);
         $this->position += strlen($ret);
+
         return $ret;
     }
 
@@ -61,6 +63,7 @@ class VariableStream {
         $right = substr($GLOBALS[$this->varname], $this->position + strlen($data));
         $GLOBALS[$this->varname] = $left . $data . $right;
         $this->position += strlen($data);
+
         return strlen($data);
     }
 
@@ -123,19 +126,21 @@ class VariableStream {
     /**
      * @param string $path
      * @param array $option
-     * @param mixed $var
      * @return bool
      */
-    public function stream_metadata($path, $option, $var)
+    public function stream_metadata($path, $option)
     {
-        if($option == STREAM_META_TOUCH) {
+        if ($option == STREAM_META_TOUCH) {
             $url = parse_url($path);
             $varname = $url['host'];
-            if(!isset($GLOBALS[$varname])) {
+
+            if (!isset($GLOBALS[$varname])) {
                 $GLOBALS[$varname] = '';
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -153,6 +158,6 @@ class VariableStream {
      */
     public function stream_stat()
     {
-        return array();
+        return [];
     }
 }

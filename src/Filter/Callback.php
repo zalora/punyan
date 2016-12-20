@@ -38,7 +38,7 @@ class Callback extends AbstractFilter
      * @param LogEvent $event
      * @return bool
      */
-    public function accept(LogEvent $event)
+    public function accept(LogEvent $event) : bool
     {
         return (bool) call_user_func($this->func, $event);
     }

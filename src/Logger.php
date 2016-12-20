@@ -7,10 +7,11 @@
 
 namespace Zalora\Punyan;
 
-use SplObjectStorage;
-use Zalora\Punyan\Writer\IWriter;
-use Zalora\Punyan\Filter\IFilter;
-use Zalora\Punyan\Filter\AbstractFilter;
+use Closure,
+    SplObjectStorage,
+    Zalora\Punyan\Writer\IWriter,
+    Zalora\Punyan\Filter\IFilter,
+    Zalora\Punyan\Filter\AbstractFilter;
 
 /**
  * @package Zalora\Punyan
@@ -47,7 +48,7 @@ class Logger extends AbstractLogger
      * @param string $appName
      * @param array $options
      */
-    public function __construct($appName, array $options)
+    public function __construct(string $appName, array $options)
     {
         if (empty($appName)) {
             throw new \InvalidArgumentException('Your logger instance must have a name');
@@ -58,11 +59,11 @@ class Logger extends AbstractLogger
         $this->writers = new SplObjectStorage();
 
         if (!array_key_exists('filters', $this->options)) {
-            $this->options['filters'] = array();
+            $this->options['filters'] = [];
         }
 
         if (!array_key_exists('writers', $this->options)) {
-            $this->options['writers'] = array();
+            $this->options['writers'] = [];
         }
 
         if (!array_key_exists('mute', $this->options)) {
@@ -84,7 +85,7 @@ class Logger extends AbstractLogger
      * @param array $context
      * @return void
      */
-    public function log($level, $msg, array $context = array())
+    public function log(int $level, $msg, array $context = [])
     {
         // Check for mute and existing writers
         if (count($this->writers) === 0 || $this->options['mute'] === true) {
@@ -121,17 +122,17 @@ class Logger extends AbstractLogger
      * @param array $backtrace
      * @return array
      */
-    public static function getLogOrigin(array $backtrace)
+    public static function getLogOrigin(array $backtrace): array
     {
         if (count($backtrace) < 2) {
-            return array();
+            return [];
         }
 
         // Safely kick the first item
         array_shift($backtrace);
 
         $previousItem = null;
-        $stackItem = array();
+        $stackItem = [];
 
         foreach ($backtrace as $stackItem) {
             if (empty($stackItem['class'])) {
@@ -167,7 +168,7 @@ class Logger extends AbstractLogger
      * @param bool $getClone
      * @return SplObjectStorage
      */
-    public function getWriters($getClone = true)
+    public function getWriters(bool $getClone = true): SplObjectStorage
     {
         if ($getClone) {
             return clone $this->writers;
@@ -197,7 +198,7 @@ class Logger extends AbstractLogger
      * @param bool $getClone
      * @return SplObjectStorage
      */
-    public function getFilters($getClone = true)
+    public function getFilters(bool $getClone = true): SplObjectStorage
     {
         if ($getClone) {
             return clone $this->filters;
@@ -215,9 +216,9 @@ class Logger extends AbstractLogger
     }
 
     /**
-     * @return string
+     * @return Closure
      */
-    public function getExceptionHandler()
+    public function getExceptionHandler(): Closure
     {
         return $this->exceptionHandler;
     }
@@ -225,8 +226,12 @@ class Logger extends AbstractLogger
     /**
      * @param string $exceptionHandler
      */
-    public function setExceptionHandler($exceptionHandler)
+    public function setExceptionHandler(string $exceptionHandler)
     {
+        if (!is_callable($exceptionHandler)) {
+            throw new \InvalidArgumentException(sprintf("'%s' is not executable", $exceptionHandler));
+        }
+
         $this->exceptionHandler = $exceptionHandler;
     }
 
@@ -235,7 +240,7 @@ class Logger extends AbstractLogger
      * @return SplObjectStorage
      * @throws \RuntimeException
      */
-    protected function buildWriters(array $writers)
+    protected function buildWriters(array $writers) : SplObjectStorage
     {
         $writerStorage = new SplObjectStorage();
 

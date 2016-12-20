@@ -30,15 +30,15 @@ class NsTest extends \PHPUnit_Framework_TestCase
         $nsMatchingFilter = new Ns($matchingConfig);
         $nsNotMatchingFilter = new Ns($notMatchingConfig);
 
-        $logEventMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEventMatching['origin'] = array(
+        $logEventMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEventMatching['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
-        $logEventNotMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEventNotMatching['origin'] = array(
+        $logEventNotMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEventNotMatching['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
         $this->assertTrue($nsMatchingFilter->accept($logEventMatching));
         $this->assertFalse($nsNotMatchingFilter->accept($logEventNotMatching));
@@ -55,15 +55,15 @@ class NsTest extends \PHPUnit_Framework_TestCase
         $nsMatchingFilter = new Ns($matchingConfig);
         $nsNotMatchingFilter = new Ns($notMatchingConfig);
 
-        $logEventMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEventMatching['origin'] = array(
+        $logEventMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEventMatching['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
-        $logEventNotMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEventNotMatching['origin'] = array(
+        $logEventNotMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEventNotMatching['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
         $this->assertTrue($nsMatchingFilter->accept($logEventMatching));
         $this->assertFalse($nsNotMatchingFilter->accept($logEventNotMatching));
@@ -80,15 +80,15 @@ class NsTest extends \PHPUnit_Framework_TestCase
         $nsMatchingFilter = new Ns($matchingConfig);
         $nsNotMatchingFilter = new Ns($notMatchingConfig);
 
-        $logEventMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEventMatching['origin'] = array(
+        $logEventMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEventMatching['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
-        $logEventNotMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEventNotMatching['origin'] = array(
+        $logEventNotMatching = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEventNotMatching['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
         $this->assertTrue($nsMatchingFilter->accept($logEventMatching));
         $this->assertFalse($nsNotMatchingFilter->accept($logEventNotMatching));
@@ -102,10 +102,10 @@ class NsTest extends \PHPUnit_Framework_TestCase
         $config = json_decode(sprintf('{ "namespace": "%s" }', 'Zalora\\\\Punyan'), true);
         $filter = new Ns($config);
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
-        $logEvent['origin'] = array(
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
+        $logEvent['origin'] = [
             'class' => __CLASS__
-        );
+        ];
 
         $this->assertTrue($filter->accept($logEvent));
     }
@@ -118,29 +118,27 @@ class NsTest extends \PHPUnit_Framework_TestCase
         $config = json_decode(sprintf('{ "namespace": "%s" }', 'Zalora\\\\Punyan'), true);
         $filter = new Ns($config);
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo', [], 'PHPUnit');
 
         $this->assertFalse($filter->accept($logEvent));
     }
 
     /**
      * Invalid search methods lead to a RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testInvalidSearchMethod()
     {
-        $this->setExpectedException('\\RuntimeException');
-
         $config = json_decode(sprintf($this->nsConfigStub, 'Zalora\\\\Punyan', 'dowser'), true);
         new Ns($config);
     }
 
     /**
      * All regular expressions are tested during init, invalid regular expressions lead to a RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testInvalidRegexp()
     {
-        $this->setExpectedException('\\RuntimeException');
-
         $config = json_decode(sprintf($this->nsConfigStub, '^Foo', Ns::SEARCH_METHOD_REGEXP), true);
         new Ns($config);
     }

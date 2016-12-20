@@ -12,6 +12,8 @@ namespace Zalora\Punyan;
  *
  * @method int getLevel() getLevel()
  *
+ * @method string getLevelName() getLevelName()
+ *
  * @method string getMsg() getMsg()
  * @method void setMsg() setMsg(string $msg)
  *
@@ -48,7 +50,7 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param mixed $exceptionToArrayHandler
      * @return LogEvent
      */
-    public static function create($level, $msg, array $context, $appName, $exceptionToArrayHandler = null)
+    public static function create(int $level, $msg, array $context, string $appName, $exceptionToArrayHandler = null)
     {
         $logEvent = new LogEvent($context);
         $logEvent->setLevel($level);
@@ -62,8 +64,8 @@ class LogEvent extends \ArrayObject implements ILogger
             $logEvent->setException(call_user_func($exceptionHandler, $msg));
             $msg = $msg->getMessage();
         }
-        $logEvent->setMsg($msg);
 
+        $logEvent->setMsg($msg);
         $logEvent->setName($appName);
         $logEvent->setTime(static::getTimestamp($context));
 
@@ -72,34 +74,38 @@ class LogEvent extends \ArrayObject implements ILogger
 
     /**
      * @param \Throwable $ex
+     * @param bool $skipTrace
      * @return array
      */
-    public static function exceptionToArray(\Throwable $ex)
+    public static function exceptionToArray(\Throwable $ex, $skipTrace = false)
     {
-        $e = array();
+        $e = [];
         $e['file'] = $ex->getFile();
         $e['message'] = $ex->getMessage();
         $e['code'] = $ex->getCode();
         $e['line'] = $ex->getLine();
-        $e['trace'] = array();
+        $e['trace'] = [];
+
+        if ($skipTrace) {
+            return $e;
+        }
 
         // Build the trace anew to make sure the original exception is not modified
         foreach ($ex->getTrace() as $traceItem) {
-            $trace = $traceItem;
-            $trace['args'] = array();
+            $trace = [];
 
-            foreach ($trace['args'] as $argItem) {
-                $arg = array();
+            foreach ($traceItem['args'] as $argItem) {
+                $arg = [];
                 $arg['type'] = gettype($argItem);
 
                 switch ($arg['type']) {
                     case 'object':
                         $arg['class'] = get_class($argItem);
-                        foreach (array('__toString', 'toString', 'toArray') as $method) {
+                        foreach (['__toString', 'toString', 'toArray'] as $method) {
                             $arg['value'] = null;
                             if (method_exists($argItem, $method)) {
                                 try {
-                                    $arg['value'] = @call_user_func(array($argItem, $method));
+                                    $arg['value'] = @call_user_func([$argItem, $method]);
                                 } catch (\Throwable $conversionException) {}
                                 break;
                             }
@@ -114,6 +120,10 @@ class LogEvent extends \ArrayObject implements ILogger
                 }
 
                 $trace['args'][] = $arg;
+            }
+
+            if (empty($trace)) {
+                continue;
             }
 
             $e['trace'][] = $trace;
@@ -145,9 +155,9 @@ class LogEvent extends \ArrayObject implements ILogger
      * Default getters and setters
      * @param string $name
      * @param mixed $arguments
-     * @return mixed|void
+     * @return mixed|null
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, $arguments)
     {
         if (strlen($name) < 4) {
             throw new \BadFunctionCallException('Logevents only support getters and setters');
@@ -164,6 +174,7 @@ class LogEvent extends \ArrayObject implements ILogger
             if (empty($this[$varName])) {
                 return null;
             }
+
             return $this[$varName];
         }
 
@@ -171,6 +182,7 @@ class LogEvent extends \ArrayObject implements ILogger
             if (empty($arguments)) {
                 throw new \InvalidArgumentException('Setters should set a value, right?');
             }
+
             $this[$varName] = $arguments[0];
         }
 
@@ -181,12 +193,13 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param int $level
      * @throws \InvalidArgumentException
      */
-    public function setLevel($level)
+    public function setLevel(int $level)
     {
-        if ($level <= 0) {
+        if (!Logger::isValidLogLevel($level)) {
             throw new \InvalidArgumentException('Level must be a positive integer, @see ILogger');
         }
 
+        $this->setLevelName($level);
         $this['level'] = (int) $level;
     }
 
@@ -194,12 +207,21 @@ class LogEvent extends \ArrayObject implements ILogger
      * @param string $name
      * @throws \InvalidArgumentException
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         if (empty($name)) {
             throw new \InvalidArgumentException('App name is mandatory');
         }
 
         $this['name'] = $name;
+    }
+
+    /**
+     * Automatically set the log level name when someone sets the log level
+     * @param int $level
+     */
+    protected function setLevelName(int $level)
+    {
+        $this['levelName'] = Logger::getLevelNameByLevel($level);
     }
 }

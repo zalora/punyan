@@ -20,7 +20,7 @@ class BunyanTest extends \PHPUnit_Framework_TestCase
      */
     public function testFormat()
     {
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, 'Hallo Test', [], 'PHPUnit');
         $formatter = new Bunyan();
         $formattedString = $formatter->format($logEvent);
 

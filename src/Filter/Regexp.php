@@ -76,10 +76,10 @@ class Regexp extends AbstractFilter
      * @param LogEvent $event
      * @return bool
      */
-    public function accept(LogEvent $event)
+    public function accept(LogEvent $event) : bool
     {
         $value = $this->getFieldValue($event);
-        if (is_null($value)) {
+        if (empty($value)) {
             return $this->returnValueOnMissingField;
         }
 
@@ -90,7 +90,7 @@ class Regexp extends AbstractFilter
      * @param LogEvent $event
      * @return string
      */
-    protected function getFieldValue(LogEvent $event)
+    protected function getFieldValue(LogEvent $event) : string
     {
         $fields = explode('.', $this->field);
         $value = $event->getArrayCopy();
@@ -105,7 +105,7 @@ class Regexp extends AbstractFilter
         }
 
         if ($x < count($fields) || is_array($value) || is_object($value)) {
-            return null;
+            return '';
         }
 
         return (string) $value;

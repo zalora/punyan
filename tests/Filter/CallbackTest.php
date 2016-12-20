@@ -61,7 +61,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
             true
         );
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', [], 'PHPUnit');
 
         $callbackFilterTrue = new Callback($configTrue);
         $callbackFilterFalse = new Callback($configFalse);
@@ -76,11 +76,10 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Invalid callbacks lead to a RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testInvalidCallback()
     {
-        $this->setExpectedException('\\RuntimeException');
-
         $configNotCallable = json_decode(
             sprintf(
                 $this->callbackConfigStub,

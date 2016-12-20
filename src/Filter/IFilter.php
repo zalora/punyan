@@ -22,6 +22,5 @@ interface IFilter
      * @param LogEvent $event
      * @return bool
      */
-    public function accept(LogEvent $event);
-
+    public function accept(LogEvent $event) : bool;
 }

@@ -17,9 +17,10 @@ class NoFilterTest extends \PHPUnit_Framework_TestCase
     /**
      * Always return true, good for unit tests
      */
-    public function testAccept() {
-        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', array(), 'PHPUnit');
-        $noFilter = new NoFilter(array());
+    public function testAccept()
+    {
+        $logEvent = LogEvent::create(ILogger::LEVEL_WARN, '', [], 'PHPUnit');
+        $noFilter = new NoFilter([]);
 
         $this->assertTrue($noFilter->accept($logEvent));
     }

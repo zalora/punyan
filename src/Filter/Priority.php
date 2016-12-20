@@ -44,7 +44,7 @@ class Priority extends AbstractFilter
      * @param LogEvent $event
      * @return bool
      */
-    public function accept(LogEvent $event)
+    public function accept(LogEvent $event) : bool
     {
         return version_compare($event['level'], $this->priority, $this->operator);
     }
@@ -53,7 +53,7 @@ class Priority extends AbstractFilter
      * @return int
      * @throws \RuntimeException
      */
-    protected function getPriority()
+    protected function getPriority() : int
     {
         if (empty($this->config['priority'])) {
             throw new \RuntimeException("Priority filter doesn't have priority");

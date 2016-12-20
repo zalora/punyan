@@ -1,7 +1,8 @@
-# Punyan [![Build Status](https://travis-ci.org/zalora/punyan.svg?branch=master)](https://travis-ci.org/zalora/punyan) [![Test Coverage](https://codeclimate.com/github/zalora/punyan/badges/coverage.svg)](https://codeclimate.com/github/zalora/punyan/coverage) [![Code Climate](https://codeclimate.com/github/zalora/punyan/badges/gpa.svg)](https://codeclimate.com/github/zalora/punyan)
+# Punyan Legacy
 
-Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally
-written for node.js
+The legacy branch supports version PHP 5.3 - 5.6. It will only receive bugfixes, but no new features. 
+
+Punyan is the PHP implementation of the [Bunyan Logger](https://github.com/trentm/node-bunyan) originally written for node.js
 
 ## Requirements
 

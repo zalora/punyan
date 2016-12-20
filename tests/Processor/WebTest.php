@@ -22,11 +22,11 @@ class WebTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessWithFakeVariables()
     {
-        $config = array(
+        $config = [
             'url' => 'php://memory',
-            'filters' => array(),
-            'processors' => array(array('Web' => array()))
-        );
+            'filters' => [],
+            'processors' => [['Web' => []]]
+        ];
 
         /*
          * As there are not many web related variables in $_SERVER when running on CLI, we fake them...
@@ -38,7 +38,7 @@ class WebTest extends \PHPUnit_Framework_TestCase
 
         $_SERVER = array_merge($_SERVER, $server);
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', ['time' => time()], 'PHPUnit');
 
         $writer = new Stream($config);
         $writer->log($logEvent);
@@ -61,7 +61,7 @@ class WebTest extends \PHPUnit_Framework_TestCase
         $server['SERVER_NAME'] = gethostname();
         $server['HTTP_REFERER'] = 'https://duckduckgo.com/?q=zalora+singapore';
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');
+        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', ['time' => time()], 'PHPUnit');
         $processor = new Web();
         $processor->process($logEvent, $server);
 
@@ -101,14 +101,14 @@ class WebTest extends \PHPUnit_Framework_TestCase
         $server['SERVER_NAME'] = gethostname();
         $server['HTTP_REFERER'] = 'https://duckduckgo.com/?q=zalora+singapore';
 
-        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', array('time' => time()), 'PHPUnit');
-        $processorOnDemandTrue = new Web(array(
+        $logEvent = LogEvent::create(ILogger::LEVEL_INFO, 'Hello PHPUnit', ['time' => time()], 'PHPUnit');
+        $processorOnDemandTrue = new Web([
             'onDemand' => true
-        ));
+        ]);
 
-        $processorOnDemandFalse = new Web(array(
+        $processorOnDemandFalse = new Web([
             'onDemand' => false
-        ));
+        ]);
 
         $processorOnDemandTrue->process($logEvent, $server);
 
